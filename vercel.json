@@ -1,0 +1,15 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "buildCommand": "npm run build:production",
+  "outputDirectory": ".next",
+  "installCommand": "npm ci",
+  "git": {
+    "deploymentEnabled": {
+      "main": true,
+      "fix/mobile-home-banners": false,
+      "fix/mobile-banner-composition": false,
+      "fix/social-preview-domain": false
+    }
+  }
+}

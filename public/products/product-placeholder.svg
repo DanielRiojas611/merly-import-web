@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800" role="img" aria-labelledby="title description">
+  <title id="title">Producto sin fotografía</title>
+  <description id="description">Imagen temporal de Merly Import</description>
+  <rect width="800" height="800" fill="#f4f6f8"/>
+  <rect x="120" y="150" width="560" height="430" rx="32" fill="#fff" stroke="#d9e2e8" stroke-width="6" stroke-dasharray="18 14"/>
+  <path d="M220 450l95-105 70 70 105-135 110 170H220z" fill="#dfe7ec"/>
+  <circle cx="325" cy="285" r="38" fill="#dfe7ec"/>
+  <text x="400" y="655" text-anchor="middle" font-family="Arial,sans-serif" font-size="34" font-weight="700" fill="#5b6c79">Fotografía pendiente</text>
+  <text x="400" y="705" text-anchor="middle" font-family="Arial,sans-serif" font-size="24" fill="#075eb8">Merly Import</text>
+</svg>

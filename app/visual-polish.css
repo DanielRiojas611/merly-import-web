@@ -1,0 +1,182 @@
+/* Correcciones visuales consolidadas para preservar la experiencia aprobada. */
+:root {
+  --merly-navy: #102b4e;
+  --merly-blue: #079eea;
+  --merly-cyan: #22c7f3;
+  --merly-green: #168f52;
+  --merly-text: #17324f;
+  --merly-muted: #617487;
+  --merly-line: #d9e4ec;
+}
+
+/* El pie de página conserva el texto de TikTok y limita el tamaño del icono. */
+.pro-footer .footer-social {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  width: auto !important;
+  min-height: 44px;
+  margin-top: 18px;
+  padding: 9px 14px;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(255,255,255,.08);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+.pro-footer .footer-social svg {
+  display: block !important;
+  width: 24px !important;
+  height: 24px !important;
+  min-width: 24px !important;
+  max-width: 24px !important;
+  flex: 0 0 24px !important;
+}
+.pro-footer .footer-social:hover { background: rgba(255,255,255,.14); }
+
+/* Banner principal: jerarquía y contraste sin tapar los productos. */
+.main-banner.has-banner-image::after {
+  opacity: 1 !important;
+  background: linear-gradient(90deg, rgba(255,255,255,.96) 0%, rgba(255,255,255,.9) 31%, rgba(255,255,255,.63) 44%, rgba(255,255,255,.12) 61%, transparent 72%) !important;
+}
+.main-banner .banner-content {
+  width: min(52%, 620px) !important;
+  padding: 42px 24px 52px 48px !important;
+}
+.main-banner .banner-content h1 {
+  max-width: 560px;
+  font-size: clamp(38px, 4vw, 58px) !important;
+  line-height: .98 !important;
+  letter-spacing: -.045em !important;
+  text-wrap: balance;
+}
+.main-banner .banner-content p {
+  max-width: 500px !important;
+  color: #294966 !important;
+  font-size: clamp(15px, 1.2vw, 18px) !important;
+  line-height: 1.48 !important;
+  font-weight: 560;
+  text-wrap: pretty;
+}
+.main-banner .banner-cta { font-size: 13px !important; }
+
+/* Categorías: texto y productos ocupan el espacio libre, sin cubrir rostros. */
+.category-story-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 16px !important;
+}
+.category-story {
+  position: relative;
+  min-height: 300px !important;
+  border-radius: 20px !important;
+  overflow: hidden;
+  isolation: isolate;
+}
+.category-story-bg {
+  position: absolute !important;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: 74% center !important;
+}
+.category-story-shade {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(90deg, rgba(255,255,255,.97) 0%, rgba(255,255,255,.91) 36%, rgba(255,255,255,.54) 52%, rgba(255,255,255,.04) 76%);
+}
+.category-story-copy {
+  position: relative !important;
+  z-index: 3 !important;
+  width: 47% !important;
+  padding: 30px 0 0 28px !important;
+}
+.category-story-copy small { font-size: 11px !important; }
+.category-story-copy h3 {
+  margin: 10px 0 0 !important;
+  font-size: clamp(24px, 2.25vw, 34px) !important;
+  line-height: 1.04 !important;
+  text-wrap: balance;
+}
+.category-story-copy p { display: none !important; }
+.category-story-copy b {
+  display: inline-flex !important;
+  margin-top: 22px !important;
+  font-size: 14px !important;
+}
+.category-story-product {
+  position: absolute !important;
+  left: 22px !important;
+  right: auto !important;
+  bottom: 12px !important;
+  z-index: 2 !important;
+  width: 35% !important;
+  height: 43% !important;
+  object-fit: contain !important;
+  object-position: left bottom !important;
+  filter: drop-shadow(0 16px 14px rgba(16,43,78,.2));
+}
+.story-pharmacy .category-story-product { width: 29% !important; height: 38% !important; }
+.story-cleaning .category-story-product { width: 30% !important; height: 39% !important; }
+
+/* Seis productos llenan la fila en desktop y desaparece el vacío central. */
+.home-product-row {
+  display: grid !important;
+  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+  align-items: stretch;
+}
+.home-product-card {
+  min-width: 0 !important;
+  width: auto !important;
+  height: 100%;
+}
+.home-product-art {
+  aspect-ratio: 1 / 1 !important;
+  min-height: 0 !important;
+  max-height: 190px;
+}
+.home-product-art img { width: 100%; height: 100%; object-fit: contain !important; }
+.home-product-card h3 { font-size: 14px !important; line-height: 1.22 !important; }
+.home-product-card p,
+.home-product-card small,
+.home-product-card a { font-size: 11px !important; }
+
+@media (max-width: 1180px) {
+  .home-product-row { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+  .main-banner .banner-content { width: 56% !important; }
+}
+
+@media (max-width: 760px) {
+  .pro-header { background: #fff !important; }
+  .main-banner { min-height: 410px !important; }
+  .main-banner.has-banner-image::before { background-image: var(--banner-mobile-image, var(--banner-image)) !important; background-position: 62% center !important; }
+  .main-banner.has-banner-image::after { background: linear-gradient(90deg, rgba(255,255,255,.98) 0%, rgba(255,255,255,.91) 52%, rgba(255,255,255,.34) 73%, transparent 100%) !important; }
+  .main-banner .banner-content { width: 68% !important; padding: 34px 16px 48px 24px !important; }
+  .main-banner .banner-content h1 { font-size: clamp(34px, 10vw, 46px) !important; }
+  .main-banner .banner-content p { font-size: 15px !important; line-height: 1.42 !important; }
+
+  .category-story-grid { grid-template-columns: 1fr !important; gap: 14px !important; }
+  .category-story { min-height: 300px !important; }
+  .category-story-bg { object-position: 72% center !important; }
+  .category-story-copy { width: 49% !important; padding: 28px 0 0 24px !important; }
+  .category-story-copy h3 { font-size: 30px !important; }
+  .category-story-product { left: 20px !important; bottom: 8px !important; width: 34% !important; height: 40% !important; }
+  .story-pharmacy .category-story-product,
+  .story-cleaning .category-story-product { width: 29% !important; height: 36% !important; }
+
+  .home-product-row { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 10px !important; }
+  .home-product-art { max-height: 170px; }
+  .home-product-card { padding: 10px !important; }
+  .pro-footer .footer-social { margin-top: 14px; font-size: 13px; }
+}
+
+@media (max-width: 390px) {
+  .category-story { min-height: 280px !important; }
+  .category-story-copy h3 { font-size: 27px !important; }
+  .main-banner .banner-content { width: 72% !important; }
+}

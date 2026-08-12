@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install exact dependencies
+        run: npm ci
+        env:
+          NPM_CONFIG_REGISTRY: https://registry.npmjs.org
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Run ESLint
+        id: lint
+        continue-on-error: true
+        run: npm exec eslint . -- --max-warnings=0 --format json --output-file /tmp/eslint-results.json
+
+      - name: Report ESLint findings
+        if: steps.lint.outcome != 'skipped'
+        run: node scripts/report-eslint.mjs /tmp/eslint-results.json
+
+      - name: Test
+        run: npm run test
+
+      - name: Build production
+        shell: bash
+        run: |
+          set +e
+          npm run build:production 2>&1 | tee /tmp/next-build.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            message=$(tail -n 120 /tmp/next-build.log)
+            message=${message//'%'/'%25'}
+            message=${message//$'\r'/'%0D'}
+            message=${message//$'\n'/'%0A'}
+            echo "::error title=Next build failed::$message"
+          fi
+          exit "$status"
