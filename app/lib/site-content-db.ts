@@ -20,10 +20,10 @@ const PREVIOUS_SETTINGS_KEY = "homepage_content_previous";
 
 export const defaultHomepageSettings: HomepageSettings = {
   sideBanners: {
-    presale: { kicker: "Preventa mayorista", title: "Separa stock antes de campana", body: "Consulta disponibilidad, volumen y fecha estimada para compras programadas.", ctaLabel: "Ver preventa", ctaHref: "#preventa", imageUrl: "/banners/preventa-logistica-marcas-v12.webp" },
+    presale: { kicker: "Preventa mayorista", title: "Separa stock antes de campaña", body: "Consulta disponibilidad, volumen y fecha estimada para compras programadas.", ctaLabel: "Ver preventa", ctaHref: "#preventa", imageUrl: "/banners/preventa-logistica-marcas-v12.webp" },
     delivery: { kicker: "Logistica Merly", title: "Despacho para Lima y provincias", body: "Coordinamos cada pedido por WhatsApp con datos claros de entrega y agencia.", ctaLabel: "Ver entregas", ctaHref: "#entregas", imageUrl: "/banners/merly-logistica-hero.png" },
   },
-  labels: { searchButton: "Buscar", headerQuote: "Cotizar", headerWhatsapp: "WhatsApp", catalogButton: "Ver catalogo", quoteButton: "Continuar por WhatsApp", tiktok: "Siguenos en TikTok" },
+  labels: { searchButton: "Buscar", headerQuote: "Cotizar", headerWhatsapp: "WhatsApp", catalogButton: "Ver catalogo", quoteButton: "Continuar por WhatsApp", tiktok: "Síguenos en TikTok" },
   contact: { phone: WHATSAPP_NUMBER, phoneLabel: WHATSAPP_LABEL, email: CONTACT_EMAIL },
   facebookUrl: FACEBOOK_URL,
   tiktokUrl: TIKTOK_URL,
@@ -74,7 +74,7 @@ function phoneLabel(value: string) {
 }
 function mergeSideBanner(value: unknown, fallback: SideBannerContent): SideBannerContent {
   const source = value && typeof value === "object" ? value as Record<string, unknown> : {};
-  return { kicker: text(source.kicker, fallback.kicker, 60), title: text(source.title, fallback.title, 120), body: text(source.body, fallback.body, 260), ctaLabel: text(source.ctaLabel, fallback.ctaLabel, 60), ctaHref: text(source.ctaHref, fallback.ctaHref, 500), imageUrl: optionalText(source.imageUrl, fallback.imageUrl) };
+  return { kicker: text(source.kicker, fallback.kicker, 60), title: text(source.title, fallback.title, 120).replace(/\bcampana\b/gi, "campaña"), body: text(source.body, fallback.body, 260), ctaLabel: text(source.ctaLabel, fallback.ctaLabel, 60), ctaHref: text(source.ctaHref, fallback.ctaHref, 500), imageUrl: optionalText(source.imageUrl, fallback.imageUrl) };
 }
 function normalizeContact(value: unknown): ContactSettings {
   const source = value && typeof value === "object" ? value as Record<string, unknown> : {};
@@ -88,10 +88,10 @@ export function normalizeHomepageSettings(value: unknown): HomepageSettings {
   const labels = source.labels && typeof source.labels === "object" ? source.labels as Record<string, unknown> : {};
   return {
     sideBanners: { presale: mergeSideBanner(sideBanners.presale, defaultHomepageSettings.sideBanners.presale), delivery: mergeSideBanner(sideBanners.delivery, defaultHomepageSettings.sideBanners.delivery) },
-    labels: { searchButton: text(labels.searchButton, defaultHomepageSettings.labels.searchButton, 40), headerQuote: text(labels.headerQuote, defaultHomepageSettings.labels.headerQuote, 40), headerWhatsapp: text(labels.headerWhatsapp, defaultHomepageSettings.labels.headerWhatsapp, 40), catalogButton: text(labels.catalogButton, "Ver catalogo", 50), quoteButton: text(labels.quoteButton, defaultHomepageSettings.labels.quoteButton, 60), tiktok: text(labels.tiktok, "Siguenos en TikTok", 40) },
+    labels: { searchButton: text(labels.searchButton, defaultHomepageSettings.labels.searchButton, 40), headerQuote: text(labels.headerQuote, defaultHomepageSettings.labels.headerQuote, 40), headerWhatsapp: text(labels.headerWhatsapp, defaultHomepageSettings.labels.headerWhatsapp, 40), catalogButton: text(labels.catalogButton, "Ver catalogo", 50), quoteButton: text(labels.quoteButton, defaultHomepageSettings.labels.quoteButton, 60), tiktok: text(labels.tiktok, "Síguenos en TikTok", 40).replace(/^Siguenos\b/i, "Síguenos") },
     contact: normalizeContact(source.contact),
     facebookUrl: optionalText(source.facebookUrl, defaultHomepageSettings.facebookUrl, 500),
-    tiktokUrl: optionalText(source.tiktokUrl, defaultHomepageSettings.tiktokUrl, 500),
+    tiktokUrl: TIKTOK_URL,
   };
 }
 function normalizeBanner(value: unknown, fallback: SiteBanner, index: number): SiteBanner {

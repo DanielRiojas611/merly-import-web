@@ -6,7 +6,7 @@ export const WHATSAPP_LABEL = "991 212 263";
 export const WHATSAPP_DISPLAY = "+51 991 212 263";
 export const CONTACT_EMAIL = "Merlyperez230@gmail.com";
 export const FACEBOOK_URL = "https://www.facebook.com/p/Merly-Import-61574358052678/";
-export const TIKTOK_URL = "https://www.tiktok.com/@merlyimport?_r=1&_t=ZS-98pdPvOTcTn";
+export const TIKTOK_URL = "https://www.tiktok.com/@merlyimport";
 export const LOGO_PATH = "/brand/merly-import-logo.png";
 export const FAVICON_PATH = "/brand/merly-import-favicon.png";
 export const STORAGE_PREFIX = "merly";
