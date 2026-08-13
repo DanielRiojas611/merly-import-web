@@ -52,3 +52,33 @@
     padding:22px 20px 240px!important;
   }
 }
+/* MERLY CATEGORY CARD CONTRAST */
+.category-story-copy{
+  background:linear-gradient(180deg,#005eb8 0%,#004987 100%)!important;
+  border:1px solid rgba(255,255,255,.18)!important;
+  border-top:3px solid #e31f36!important;
+  box-shadow:0 16px 36px rgba(0,73,135,.22)!important;
+  color:#fff!important;
+}
+
+.category-story-copy small{
+  color:rgba(255,255,255,.82)!important;
+}
+
+.category-story-copy h3{
+  color:#fff!important;
+}
+
+.category-story-copy b{
+  color:#fff!important;
+}
+
+.category-story-copy b i{
+  color:#ff4a5f!important;
+}
+
+.category-story-copy:hover{
+  background:linear-gradient(180deg,#0069c8 0%,#004987 100%)!important;
+  box-shadow:0 20px 42px rgba(0,73,135,.28)!important;
+}
+
