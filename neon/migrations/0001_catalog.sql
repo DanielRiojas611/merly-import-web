@@ -79,9 +79,8 @@ INSERT INTO banners (
   id, kicker, title, body, cta_label, cta_href, theme,
   image_url, mobile_image_url, sort_order
 ) VALUES
-  ('marcas-propias', 'Marcas propias', 'Más margen para tu negocio', 'Conoce nuestras líneas de alta rotación y cotiza mejores escalas por volumen.', 'Ver marcas propias', '/catalogo', 'brand', '/banners/portafolio-marcas-propias-v2.webp', '/banners/portafolio-marcas-propias-mobile-v12.webp', 10),
-  ('higiene-oral', 'Higiene oral', 'Una categoría que rota todos los días', 'Abastece tu negocio con presentaciones mayoristas y cotiza la escala que necesitas.', 'Ver higiene oral', '/catalogo', 'offers', '/banners/preventa-logistica-marcas-v12.webp', NULL, 20),
-  ('cobertura-nacional', 'Cobertura nacional', 'Abastecemos Lima y provincias', 'Delivery coordinado en Lima o entrega mediante agencia para pedidos a provincias.', 'Conocer entregas', '#entregas', 'delivery', '/banners/entrega-nacional-vinil-v10.webp', NULL, 30)
+  ('merly-mayorista', 'Importadora mayorista', 'Surtido de alta rotacion para negocios', 'Abastece tu bodega, botica o distribuidora con lineas de higiene, limpieza, hogar y consumo masivo.', 'Ver catalogo', '/catalogo', 'brand', '/banners/portafolio-marcas-propias-v2.webp', '/banners/portafolio-marcas-propias-mobile-v12.webp', 10),
+  ('merly-entregas', 'Logistica Merly', 'Importacion, almacen y despacho coordinado', 'Cotiza por volumen y coordina salida de mercaderia para Lima o agencia a provincias.', 'Cotizar ahora', '/catalogo', 'delivery', '/banners/merly-logistica-hero.png', '/banners/merly-logistica-hero.png', 20)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO site_settings (key, value)

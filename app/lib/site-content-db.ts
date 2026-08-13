@@ -20,8 +20,8 @@ const PREVIOUS_SETTINGS_KEY = "homepage_content_previous";
 
 export const defaultHomepageSettings: HomepageSettings = {
   sideBanners: {
-    presale: { kicker: "Preventa", title: "Reserva tu mercaderia con anticipacion", body: "Consulta productos disponibles y separa tu pedido antes de su llegada.", ctaLabel: "Ver preventa", ctaHref: "#preventa", imageUrl: "/banners/preventa-logistica-marcas-v12.webp" },
-    delivery: { kicker: "Entrega coordinada", title: "Lima y provincias", body: "Coordinamos despacho por WhatsApp para que recibas tu pedido de forma clara y segura.", ctaLabel: "Ver entregas", ctaHref: "#entregas", imageUrl: "/banners/entrega-nacional-vinil-v10.webp" },
+    presale: { kicker: "Preventa mayorista", title: "Separa stock antes de campana", body: "Consulta disponibilidad, volumen y fecha estimada para compras programadas.", ctaLabel: "Ver preventa", ctaHref: "#preventa", imageUrl: "/banners/preventa-logistica-marcas-v12.webp" },
+    delivery: { kicker: "Logistica Merly", title: "Despacho para Lima y provincias", body: "Coordinamos cada pedido por WhatsApp con datos claros de entrega y agencia.", ctaLabel: "Ver entregas", ctaHref: "#entregas", imageUrl: "/banners/merly-logistica-hero.png" },
   },
   labels: { searchButton: "Buscar", headerQuote: "Cotizar", headerWhatsapp: "WhatsApp", catalogButton: "Ver catalogo", quoteButton: "Continuar por WhatsApp", tiktok: "Siguenos en TikTok" },
   contact: { phone: WHATSAPP_NUMBER, phoneLabel: WHATSAPP_LABEL, email: CONTACT_EMAIL },
@@ -32,9 +32,9 @@ export const defaultHomepageSettings: HomepageSettings = {
 const defaultBanners: SiteBanner[] = [
   {
     id: "merly-mayorista",
-    kicker: "Catalogo mayorista",
-    title: "Productos de alta rotacion para tu negocio",
-    body: "Encuentra lineas de higiene, limpieza, hogar y consumo masivo para cotizar por volumen.",
+    kicker: "Importadora mayorista",
+    title: "Surtido de alta rotacion para negocios",
+    body: "Abastece tu bodega, botica o distribuidora con lineas de higiene, limpieza, hogar y consumo masivo.",
     ctaLabel: "Ver catalogo",
     ctaHref: "/catalogo",
     theme: "brand",
@@ -45,9 +45,9 @@ const defaultBanners: SiteBanner[] = [
   },
   {
     id: "merly-entregas",
-    kicker: "Entregas coordinadas",
-    title: "Atencion para Lima y provincias",
-    body: "Preparamos cotizaciones por WhatsApp y coordinamos despacho segun el destino del pedido.",
+    kicker: "Logistica Merly",
+    title: "Importacion, almacen y despacho coordinado",
+    body: "Cotiza por volumen y coordina salida de mercaderia para Lima o agencia a provincias.",
     ctaLabel: "Cotizar ahora",
     ctaHref: "/catalogo",
     theme: "delivery",

@@ -1,15 +1,15 @@
 :root {
-  --blue: #079eea;
-  --blue-deep: #0879c8;
-  --cyan: #22c7f3;
-  --navy: #102b4e;
-  --navy-2: #183a61;
-  --muted: #5f7488;
-  --red: #ef224e;
+  --blue: #005eb8;
+  --blue-deep: #004987;
+  --cyan: #2aaeea;
+  --navy: #12253b;
+  --navy-2: #173a5d;
+  --muted: #5a6f82;
+  --red: #e31f36;
   --green: #18a864;
-  --line: #dfe8ef;
-  --surface: #f5f8fb;
-  --shadow: 0 18px 50px rgba(16, 43, 78, 0.1);
+  --line: #d8e3ec;
+  --surface: #f6f9fc;
+  --shadow: 0 18px 50px rgba(18, 37, 59, 0.1);
   --font-geist-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-geist-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }

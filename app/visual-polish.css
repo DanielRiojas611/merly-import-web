@@ -1,12 +1,13 @@
 /* Correcciones visuales consolidadas para preservar la experiencia aprobada. */
 :root {
-  --merly-navy: #102b4e;
-  --merly-blue: #079eea;
-  --merly-cyan: #22c7f3;
+  --merly-navy: #12253b;
+  --merly-blue: #005eb8;
+  --merly-cyan: #2aaeea;
+  --merly-red: #e31f36;
   --merly-green: #168f52;
-  --merly-text: #17324f;
-  --merly-muted: #617487;
-  --merly-line: #d9e4ec;
+  --merly-text: #12253b;
+  --merly-muted: #5a6f82;
+  --merly-line: #d8e3ec;
 }
 
 /* El pie de página conserva el texto de TikTok y limita el tamaño del icono. */

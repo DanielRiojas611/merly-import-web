@@ -9,9 +9,9 @@ export const siteAssets = {
     ownBrands: "/banners/portafolio-marcas-propias-v2.webp",
     ownBrandsMobile: "/banners/portafolio-marcas-propias-mobile-v12.webp",
     offers: "/category-stories/higiene-oral.webp",
-    nationwideDelivery: "/banners/entrega-nacional-vinil-v10.webp",
+    nationwideDelivery: "/banners/merly-logistica-hero.png",
     presale: "/banners/preventa-logistica-marcas-v12.webp",
-    coordinatedDelivery: "/banners/entrega-nacional-vinil-v10.webp",
+    coordinatedDelivery: "/banners/merly-logistica-hero.png",
   },
   categoryStories: {
     oralCare: "/category-stories/higiene-oral.webp",
