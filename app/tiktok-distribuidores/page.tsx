@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
-import { BRAND_NAME, CONTACT_EMAIL, LOGO_PATH, OFFICIAL_SITE_URL, SITE_DOMAIN, WHATSAPP_DISPLAY, WHATSAPP_NUMBER } from "../lib/brand";
+import { BRAND_NAME, CONTACT_EMAIL, OFFICIAL_SITE_URL, SITE_DOMAIN, WHATSAPP_DISPLAY, WHATSAPP_NUMBER } from "../lib/brand";
 import styles from "./page.module.css";
 
 type FormState = {
@@ -143,7 +143,7 @@ export default function TikTokDistribuidoresPreview() {
         <div className={styles.banner}>
           <div className={styles.brandRow}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className={styles.logo} src={LOGO_PATH} alt={BRAND_NAME} />
+            <img className={styles.logo} src="/brand/merly-import-logo-outline.png" alt={BRAND_NAME} />
             <span className={styles.domainPill}>{SITE_DOMAIN}</span>
           </div>
           <div className={styles.kicker}>Mayoristas y distribuidores</div>
