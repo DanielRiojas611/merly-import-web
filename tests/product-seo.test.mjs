@@ -17,7 +17,7 @@ test("the SEO pilot contains exactly 20 unique product ids", async () => {
 test("product routes remain descriptive and resolve to controlled ids", async () => {
   const source = await readText("app/lib/product-seo.ts");
   assert.match(source, /return `\$\{readable\}--\$\{product\.id\}`/);
-  assert.match(source, /isSeoPilotProductId\(id\)/);
+  assert.match(source, /return id;/);
   assert.match(source, /\/productos\/\$\{productSlug\(product\)\}/);
 });
 
@@ -30,9 +30,25 @@ test("product detail pages use the existing quote cart", async () => {
   assert.match(button, /router\.push\(`\/catalogo\?buscar=/);
 });
 
-test("the sitemap exposes the product index and pilot details", async () => {
+test("the sitemap exposes the product index and all published details", async () => {
   const sitemap = await readText("app/sitemap.ts");
   assert.match(sitemap, /new URL\("\/productos", base\)/);
-  assert.match(sitemap, /SEO_PILOT_PRODUCT_IDS/);
+  assert.match(sitemap, /getPublishedProducts\(\)/);
+  assert.doesNotMatch(sitemap, /SEO_PILOT_PRODUCT_IDS/);
   assert.match(sitemap, /productPath\(product\)/);
+});
+
+test("public product index includes the full published catalog", async () => {
+  const index = await readText("app/productos/page.tsx");
+  assert.match(index, /getPublishedProducts\(\)/);
+  assert.doesNotMatch(index, /SEO_PILOT_PRODUCT_IDS/);
+});
+
+test("previews block crawlers and production blocks private paths", async () => {
+  const robots = await readText("app/robots.ts");
+  assert.match(robots, /VERCEL_ENV !== "production"/);
+  assert.match(robots, /disallow: "\/"/);
+  assert.match(robots, /"\/admin\/"/);
+  assert.match(robots, /"\/login"/);
+  assert.match(robots, /"\/control"/);
 });

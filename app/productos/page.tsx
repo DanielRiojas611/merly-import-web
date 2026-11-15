@@ -4,8 +4,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import type { Product } from "../catalogo/products";
 import { BRAND_NAME, LOGO_PATH } from "../lib/brand";
-import { getPublishedProductsByIds } from "../lib/neon-catalog";
-import { SEO_PILOT_PRODUCT_IDS, productPath } from "../lib/product-seo";
+import { getPublishedProducts } from "../lib/neon-catalog";
+import { productPath } from "../lib/product-seo";
 import { displayProductName, productQuoteName } from "../lib/product-utils";
 import "./products.css";
 
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
 export default async function ProductsPage() {
   let products: Product[] = [];
   try {
-    products = await getPublishedProductsByIds([...SEO_PILOT_PRODUCT_IDS]);
+    products = (await getPublishedProducts()) ?? [];
   } catch (error) {
     console.error("No se pudieron cargar las fichas de productos", error);
   }

@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import type { Product } from "./catalogo/products";
-import { getPublishedProductsByIds } from "./lib/neon-catalog";
-import { SEO_PILOT_PRODUCT_IDS, productPath } from "./lib/product-seo";
+import { getPublishedProducts } from "./lib/neon-catalog";
+import { productPath } from "./lib/product-seo";
 import { siteUrl } from "./lib/site-url";
 
 function lastUpdated() {
@@ -10,12 +10,14 @@ function lastUpdated() {
   return Number.isNaN(parsed.getTime()) ? new Date("2026-08-05T00:00:00.000Z") : parsed;
 }
 
+export const revalidate = 3600;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = siteUrl();
   const modified = lastUpdated();
   let products: Product[] = [];
   try {
-    products = await getPublishedProductsByIds([...SEO_PILOT_PRODUCT_IDS]);
+    products = (await getPublishedProducts()) ?? [];
   } catch (error) {
     console.error("No se pudieron incluir productos en el sitemap", error);
   }
@@ -24,7 +26,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: new URL("/", base).toString(), lastModified: modified, changeFrequency: "weekly", priority: 1 },
     { url: new URL("/catalogo", base).toString(), lastModified: modified, changeFrequency: "daily", priority: .9 },
     { url: new URL("/productos", base).toString(), lastModified: modified, changeFrequency: "weekly", priority: .8 },
-    ...products.map((product) => ({
+    ...[...new Map(products.map((product) => [product.id, product])).values()].map((product) => ({
       url: new URL(productPath(product), base).toString(),
       lastModified: modified,
       changeFrequency: "weekly" as const,

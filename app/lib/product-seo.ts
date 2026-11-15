@@ -56,7 +56,7 @@ export function productIdFromSlug(slug: string) {
   if (separator < 1) return null;
   const id = slug.slice(separator + 2);
   if (!/^[a-zA-Z0-9._-]{1,120}$/.test(id)) return null;
-  return isSeoPilotProductId(id) ? id : null;
+  return id;
 }
 
 export function productSeoDescription(product: Pick<Product, "brand" | "name" | "presentation">) {
