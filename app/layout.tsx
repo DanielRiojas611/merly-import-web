@@ -20,6 +20,7 @@ const seoDescription = "Catalogo mayorista de productos de higiene, limpieza, ho
 export const viewport: Viewport = { width: "device-width", initialScale: 1, colorScheme: "light", themeColor: "#005eb8" };
 export const metadata: Metadata = {
   metadataBase: siteUrl(),
+  verification: { google: "g-ZuOk2oRJX_vFWdovmNtmGe407O6iLBRIiXB1TN1NU" },
   title: { default: seoTitle, template: `%s | ${BRAND_NAME}` },
   description: seoDescription,
   alternates: { canonical: "/" },
