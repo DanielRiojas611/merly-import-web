@@ -236,6 +236,7 @@ export default function CatalogClient({ initialProducts, initialTotal, catalogTo
   }
   function sendQuote() {
     if (!selected.length) return;
+    (window as typeof window & { gtag?: (...args: unknown[]) => void }).gtag?.("event", "quote_whatsapp", { item_count: selected.length, delivery });
     const phone = digits(whatsappNumber);
     const cartEmoji = String.fromCodePoint(0x1f6d2);
     const locationEmoji = String.fromCodePoint(0x1f4cd);

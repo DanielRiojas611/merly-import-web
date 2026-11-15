@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import GoogleAnalytics from "./GoogleAnalytics";
 import {
   BRAND_NAME,
   CONTACT_EMAIL,
@@ -79,6 +80,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 
   return <html lang="es"><body>
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organization) }} />
+    {publicProduction && <GoogleAnalytics />}
     {children}
   </body></html>;
 }

@@ -28,8 +28,7 @@ const categoryStories = [
 
 function track(event: string, data: Record<string, string | number> = {}) {
   if (typeof window === "undefined") return;
-  const dataLayer = (window as typeof window & { dataLayer?: Array<Record<string, unknown>> }).dataLayer;
-  dataLayer?.push({ event, ...data });
+  (window as typeof window & { gtag?: (...args: unknown[]) => void }).gtag?.("event", event, data);
 }
 function money(value: number) { return new Intl.NumberFormat("es-PE", { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(value); }
 function WhatsAppIcon() { return <svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M16.05 3A12.8 12.8 0 0 0 5.1 22.43L3.4 28.7l6.4-1.68A12.87 12.87 0 1 0 16.05 3Zm0 23.48a10.6 10.6 0 0 1-5.4-1.48l-.38-.23-3.8 1 1.01-3.7-.25-.4a10.61 10.61 0 1 1 8.82 4.81Z" /></svg>; }
