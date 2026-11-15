@@ -41,7 +41,7 @@ export default async function ProductsPage() {
     <section className="products-shell products-hero">
       <p className="products-eyebrow">Venta mayorista</p>
       <h1>Productos disponibles para cotizar</h1>
-      <p>Consulta la presentacion de cada producto y agregalo al flujo de cotizacion existente. Atendemos negocios en Lima y coordinamos envios a todo el Peru.</p>
+      <p>Encuentra productos de higiene, limpieza y hogar al por mayor para bodegas, boticas, minimarkets y distribuidores. Revisa cada presentación, agrega productos a tu cotización y consulta precio y disponibilidad por WhatsApp. Coordinamos entregas en Lima y envíos a provincias.</p>
     </section>
     <section className="products-shell" aria-label="Fichas de productos">
       {products.length ? <div className="products-grid">{products.map((product) => {

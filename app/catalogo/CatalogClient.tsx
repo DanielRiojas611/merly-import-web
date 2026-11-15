@@ -1,4 +1,6 @@
 "use client";
+
+import { withLeadOrigin } from "../lib/lead-origin";
 /* eslint-disable @next/next/no-img-element */
 
 import Link from "next/link";
@@ -246,7 +248,7 @@ export default function CatalogClient({ initialProducts, initialTotal, catalogTo
     const deliveryText = delivery === "lima" ? "Entrega en Lima" : "Envio a provincia";
     const priceText = hasPendingPrices ? `${moneyEmoji} *Me confirman precios y disponibilidad, por favor.*` : `${moneyEmoji} *Total referencial:* S/ ${totalPrice.toFixed(2)}`;
     const message = [greeting, "", `${cartEmoji} *Quiero cotizar:*`, "", ...lines, "", `${locationEmoji} *Entrega:* ${deliveryText}`, priceText, "", "Gracias."].join("\n");
-    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(withLeadOrigin(message))}`, "_blank", "noopener,noreferrer");
   }
 
   return <main className="catalog-page">

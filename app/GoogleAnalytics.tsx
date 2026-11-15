@@ -1,6 +1,7 @@
 "use client";
 
 import Script from "next/script";
+import { leadOrigin, withLeadOrigin } from "./lib/lead-origin";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
@@ -13,17 +14,21 @@ export default function GoogleAnalytics() {
 
   useEffect(() => {
     if (privatePage) return;
+    leadOrigin();
     function onClick(event: MouseEvent) {
       if (!(event.target instanceof Element)) return;
       const link = event.target.closest("a");
       if (!link) return;
       const url = new URL(link.href, window.location.origin);
       if (url.hostname !== "wa.me" && url.hostname !== "api.whatsapp.com") return;
+      const message = url.searchParams.get("text") || "Hola, quiero cotizar productos de Merly Import.";
+      url.searchParams.set("text", withLeadOrigin(message));
+      link.href = url.toString();
       if (link.classList.contains("header-whatsapp")) return;
-      (window as AnalyticsWindow).gtag?.("event", "whatsapp_click", { placement: pathname });
+      (window as AnalyticsWindow).gtag?.("event", "whatsapp_click", { placement: pathname, lead_source: leadOrigin() });
     }
-    document.addEventListener("click", onClick);
-    return () => document.removeEventListener("click", onClick);
+    document.addEventListener("click", onClick, true);
+    return () => document.removeEventListener("click", onClick, true);
   }, [pathname, privatePage]);
 
   if (privatePage) return null;
