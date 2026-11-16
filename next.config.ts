@@ -34,6 +34,22 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "*.public.blob.vercel-storage.com" },
     ],
   },
+  async rewrites() {
+    const controlWorker = "https://merly-control-app.merlyimport.workers.dev";
+    return {
+      beforeFiles: [
+        { source: "/control", destination: `${controlWorker}/control` },
+        { source: "/control/:path*", destination: `${controlWorker}/control/:path*` },
+        { source: "/login", destination: `${controlWorker}/login` },
+        { source: "/logout", destination: `${controlWorker}/logout` },
+      ],
+      afterFiles: [],
+      // Keep the site's own /api/admin and /api/catalogo routes intact.
+      fallback: [
+        { source: "/api/:path*", destination: `${controlWorker}/api/:path*` },
+      ],
+    };
+  },
   async redirects() {
     return [
       { source: "/producto/:path*", destination: "/catalogo", permanent: true },
