@@ -38,6 +38,7 @@ const nextConfig: NextConfig = {
     const controlWorker = "https://merly-control-app.merlyimport.workers.dev";
     return {
       beforeFiles: [
+        { source: "/assets/merly-logo.png", destination: `${controlWorker}/assets/merly-logo.png` },
         { source: "/control", destination: `${controlWorker}/control` },
         { source: "/control/:path*", destination: `${controlWorker}/control/:path*` },
         { source: "/login", destination: `${controlWorker}/login` },
