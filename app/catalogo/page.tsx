@@ -8,7 +8,6 @@ import CatalogClient from "./CatalogClient";
 import CatalogCommercialPortal from "./CatalogCommercialPortal";
 import "./catalog.css";
 import "./catalog-surgical.css";
-import "./commerce-catalog.css";
 import "./editorial-catalog.css";
 
 export const revalidate = 120;
