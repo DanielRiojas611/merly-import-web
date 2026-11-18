@@ -23,6 +23,9 @@ test("homepage search and quote paths are preserved", () => {
   assert.match(home, /withLeadOrigin\(message\)/);
   assert.match(home, /href="\/catalogo"/);
   assert.match(home, /analytics\("whatsapp_click"/);
+  assert.match(home, /function quickAdd\(product:Product\)/);
+  assert.match(home, /CART_STORAGE_KEY/);
+  assert.match(home, /catalog_add_to_quote/);
 });
 
 test("catalog search, filtering, cart, pricing and analytics remain available", () => {
