@@ -146,7 +146,7 @@ export default function EditorialHome({
             <a href="#entregas" onClick={() => setMenuOpen(false)}>Entregas</a>
             <a href="#cotizar" onClick={() => setMenuOpen(false)}>Cotizar</a>
           </nav>
-          <a className="ed-header-cta" href={waQuote} target="_blank" rel="noreferrer" onClick={() => track("whatsapp_click", { placement: "header" })}>Hablar con ventas <span aria-hidden="true">↗</span></a>
+          <a className="ed-header-cta" href={waQuote} target="_blank" rel="noreferrer" onClick={() => track("whatsapp_click", { placement: "header" })}>{settings.labels.headerWhatsapp} / Ventas <span aria-hidden="true">↗</span></a>
           <button className="ed-menu-button" type="button" aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"} aria-expanded={menuOpen} onClick={() => setMenuOpen((open) => !open)}>{menuOpen ? "✕" : "☰"}</button>
         </div>
       </header>
@@ -159,7 +159,7 @@ export default function EditorialHome({
             <p>Productos de higiene, limpieza y cuidado personal para abastecer tu negocio. Compra al por mayor y coordina cada pedido directamente.</p>
             <div className="ed-hero-actions">
               <Link className="ed-action ed-action-dark" href="/catalogo">Explorar productos <span>↗</span></Link>
-              <a className="ed-action ed-action-outline" href="#cotizar">Cotizar mi pedido</a>
+              <a className="ed-action ed-action-outline" href="#cotizar">{settings.labels.headerQuote} mi pedido</a>
             </div>
             <div className="ed-hero-assurance"><span>✳ Precios por volumen</span><span>✳ Lima y provincias</span><span>✳ Atención directa</span></div>
           </div>
@@ -176,6 +176,8 @@ export default function EditorialHome({
       <section className="ed-ticker" aria-label="Nuestro enfoque">
         <div className="ed-ticker-inner"><span>PRODUCTOS PARA CRECER</span><b>✳</b><span>COMPRA MAYORISTA</span><b>✳</b><span>ATENCIÓN PERSONALIZADA</span><b>✳</b><span>ENTREGAS COORDINADAS</span></div>
       </section>
+
+      <section className="ed-find" aria-label="Buscar productos"><div className="ed-container ed-find-grid"><div><span>¿BUSCAS ALGO EN PARTICULAR?</span><h2>Encuéntralo en nuestro catálogo.</h2></div><form action="/catalogo" role="search"><label htmlFor="ed-product-search" className="ed-sr-only">Nombre del producto o marca</label><input id="ed-product-search" type="search" name="buscar" placeholder="Producto, marca o presentación..." maxLength={100} /><button type="submit">{settings.labels.searchButton} <span aria-hidden="true">↗</span></button></form></div></section>
 
       <section className="ed-intro ed-section" aria-labelledby="ed-intro-title">
         <div className="ed-container ed-intro-grid">
@@ -226,14 +228,14 @@ export default function EditorialHome({
           <div className="ed-section-heading"><div><span className="ed-overline">PRODUCTOS / SELECCIÓN COMERCIAL</span><h2 id="ed-featured-title">Para tu próxima <em>reposición.</em></h2></div><Link href="/catalogo">Ir al catálogo completo ↗</Link></div>
           <div className="ed-segment-tabs" role="group" aria-label="Tu tipo de negocio">{segments.map((item) => <button type="button" key={item.key} className={segment === item.key ? "active" : ""} aria-pressed={segment === item.key} onClick={() => chooseSegment(item.key)}><strong>{item.label}</strong><small>{item.hint}</small></button>)}</div>
           {products.length ? <div className="ed-products-grid">{products.map((product) => <ProductTile key={product.id} product={product} />)}</div> : <p className="ed-no-results">Consulta nuestro catálogo para conocer las opciones disponibles.</p>}
-          <div className="ed-featured-footer"><span>Consulta precios finales y disponibilidad al solicitar tu cotización.</span><Link href="/catalogo" className="ed-action ed-action-dark">Ver todos los productos <span>↗</span></Link></div>
+          <div className="ed-featured-footer"><span>Consulta precios finales y disponibilidad al solicitar tu cotización.</span><Link href="/catalogo" className="ed-action ed-action-dark">{settings.labels.catalogButton} <span>↗</span></Link></div>
         </div>
       </section>
 
       <section className="ed-story ed-section" id="preventa" aria-labelledby="ed-story-title">
         <div className="ed-container ed-story-grid">
           <div className="ed-story-photo"><img src={settings.sideBanners.presale.imageUrl || siteAssets.sections.presale} alt="Campañas de preventa mayorista" loading="lazy" /></div>
-          <div className="ed-story-copy"><span className="ed-overline">{settings.sideBanners.presale.kicker.toUpperCase()}</span><h2 id="ed-story-title">Piensa en grande.<br /><em>Compra con tiempo.</em></h2><p>{settings.sideBanners.presale.body}</p><a href={waRoot + "?text=" + encodeURIComponent(withLeadOrigin("Hola, quiero conocer las campañas de preventa mayorista de Merly Import."))} target="_blank" rel="noreferrer" className="ed-action ed-action-light" onClick={() => track("whatsapp_click", { placement: "presale" })}>Consultar preventa <span>↗</span></a></div>
+          <div className="ed-story-copy"><span className="ed-overline">{settings.sideBanners.presale.kicker.toUpperCase()}</span><h2 id="ed-story-title">Piensa en grande.<br /><em>Compra con tiempo.</em></h2><strong className="ed-story-program">{settings.sideBanners.presale.title}</strong><p>{settings.sideBanners.presale.body}</p><a href={waRoot + "?text=" + encodeURIComponent(withLeadOrigin("Hola, quiero conocer las campañas de preventa mayorista de Merly Import."))} target="_blank" rel="noreferrer" className="ed-action ed-action-light" onClick={() => track("whatsapp_click", { placement: "presale" })}>Consultar preventa <span>↗</span></a></div>
         </div>
       </section>
 
@@ -251,7 +253,7 @@ export default function EditorialHome({
       <section className="ed-logistics ed-section" id="entregas" aria-labelledby="ed-logistics-title">
         <div className="ed-container">
           <div className="ed-section-heading"><div><span className="ed-overline">ENTREGAS / A TU RITMO</span><h2 id="ed-logistics-title">Tú vendes. <em>Nos coordinamos.</em></h2></div><a href="#cotizar">Consultar entregas ↗</a></div>
-          <div className="ed-logistics-grid">
+          <p className="ed-logistics-editorial">{settings.sideBanners.delivery.title} — {settings.sideBanners.delivery.body}</p><div className="ed-logistics-grid">
             <article className="ed-logistic-main"><span>LIMA</span><h3>Delivery coordinado.</h3><p>Sin costo desde S/ {ownDelivery} en marcas propias o S/ {mixedDelivery} en pedidos mixtos, sujeto a cobertura.</p><b>COORDINA TU DISTRITO ↗</b></article>
             <article className="ed-logistic-secondary"><span>PROVINCIAS</span><h3>Tu agencia, tu destino.</h3><p>Coordinamos el despacho a la agencia elegida. El flete interprovincial lo asume el cliente.</p><img src={settings.sideBanners.delivery.imageUrl || siteAssets.banners.coordinatedDelivery} alt="Logística de pedidos" loading="lazy" /></article>
           </div>
