@@ -2,6 +2,8 @@
 /* eslint-disable @next/next/no-img-element */
 import { useMemo, useState, type FormEvent, type SyntheticEvent } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { CART_STORAGE_KEY } from "./lib/cart-storage";
 import type { Product } from "./catalogo/products";
 import type { CommercialRules } from "./lib/commercial-rules";
 import type { SiteContent } from "./lib/site-content-db";
@@ -38,7 +40,7 @@ function matches(product:Product,segment:Segment) {
   if(segment==="bodega")return !name.includes("industrial");
   return true;
 }
-function ProductCard({product}:{product:Product}) {
+function ProductCard({product,onQuickAdd}:{product:Product;onQuickAdd:(product:Product)=>void}) {
   const name=displayProductName(product.brand,product.name);
   const prices=product.quoteOnly?[]:[...product.tiers].sort((a,b)=>a.min-b.min);
   const first=prices[0];
@@ -52,7 +54,8 @@ function ProductCard({product}:{product:Product}) {
       <h3>{name}</h3>
       <p>{displayProductPresentation(product.presentation)}</p>
       <div className="wh-product-meta">{first?<><strong>S/ {first.price.toFixed(2)}</strong><span>por {productUnitLabel(product,1).replace(/^1\s+/,"")}</span></>:<><strong>Precio mayorista</strong><span>Consultar según volumen</span></>}</div>
-      <Link href={"/catalogo?"+search.toString()} onClick={()=>analytics("product_view",{product:name})}>Cotizar producto <span aria-hidden="true">↗</span></Link>
+      <Link className="wh-product-detail-link" href={"/catalogo?"+search.toString()} onClick={()=>analytics("product_view",{product:name})}>Ver presentación <span aria-hidden="true">↗</span></Link>
+      <button className="wh-quickadd" type="button" onClick={()=>onQuickAdd(product)}>+ Agregar a cotización</button>
     </div>
   </article>;
 }
@@ -60,6 +63,7 @@ function ProductCard({product}:{product:Product}) {
 export default function WholesaleHome({content,featuredProducts,whatsappNumber,commercialRules,previewMode=false}:{
   content:SiteContent;featuredProducts:Product[];whatsappNumber:string;commercialRules:CommercialRules;previewMode?:boolean;
 }) {
+  const router=useRouter();
   const [menuOpen,setMenuOpen]=useState(false);
   const [segment,setSegment]=useState<Segment>("bodega");
   const [campaignIndex,setCampaignIndex]=useState(0);
@@ -76,6 +80,24 @@ export default function WholesaleHome({content,featuredProducts,whatsappNumber,c
   const quoteLink=number+"?text="+encodeURIComponent(withLeadOrigin("Hola, equipo de Merly Import. Quiero cotizar productos al por mayor."));
   const minimumOwn=money(commercialRules.freeDeliveryOwnBrands);
   const minimumMixed=money(commercialRules.freeDeliveryMixed);
+  function quickAdd(product:Product){
+    const fallbackQuery=new URLSearchParams({buscar:[product.brand,displayProductName(product.brand,product.name)].filter(Boolean).join(" ")});
+    const fallbackUrl="/catalogo?"+fallbackQuery.toString();
+    if(!/^[a-zA-Z0-9._-]{1,120}$/.test(product.id)){router.push(fallbackUrl);return;}
+    try {
+      const raw=window.localStorage.getItem(CART_STORAGE_KEY);
+      const parsed:unknown=raw?JSON.parse(raw):{};
+      const next:Record<string,unknown>=parsed&&typeof parsed==="object"&&!Array.isArray(parsed)?{...parsed as Record<string,unknown>}:{};
+      const previous=Number(next[product.id]);
+      const valid=Number.isFinite(previous)&&Number.isInteger(previous)&&previous>=1?previous:0;
+      next[product.id]=Math.min(999,valid+1);
+      window.localStorage.setItem(CART_STORAGE_KEY,JSON.stringify(next));
+      analytics("catalog_add_to_quote",{item_id:product.id,item_brand:product.brand,placement:"homepage",quantity:next[product.id] as number});
+      router.push("/catalogo");
+    } catch {
+      router.push(fallbackUrl);
+    }
+  }
   function sendForm(event:FormEvent<HTMLFormElement>){
     event.preventDefault();
     const values=new FormData(event.currentTarget);
@@ -162,7 +184,7 @@ export default function WholesaleHome({content,featuredProducts,whatsappNumber,c
     <section className="wh-products wh-section" id="productos"><div className="wh-container">
       <div className="wh-section-heading"><div><span>SELECCIÓN PARA COMPRAR AL POR MAYOR</span><h2>Productos para reponer hoy</h2><p>Encuentra presentaciones y solicita precios según volumen.</p></div><Link href="/catalogo">Ver más productos ↗</Link></div>
       <div className="wh-audiences" role="group" aria-label="Tipo de negocio">{audiences.map(a=><button key={a.key} className={segment===a.key?"active":""} aria-pressed={segment===a.key} type="button" onClick={()=>{setSegment(a.key);analytics("segment_selected",{segment:a.key});}}><strong>{a.label}</strong><small>{a.description}</small></button>)}</div>
-      {featured.length?<div className="wh-product-grid">{featured.map(product=><ProductCard key={product.id} product={product}/>)}</div>:<p className="wh-empty">Consulta el catálogo para ver las opciones disponibles.</p>}
+      {featured.length?<div className="wh-product-grid">{featured.map(product=><ProductCard key={product.id} product={product} onQuickAdd={quickAdd}/>)}</div>:<p className="wh-empty">Consulta el catálogo para ver las opciones disponibles.</p>}
       <div className="wh-viewall"><Link className="wh-cta-orange" href="/catalogo">Explorar catálogo completo <span>↗</span></Link></div>
     </div></section>
     <section className="wh-campaign wh-section"><div className="wh-container wh-campaign-grid">
