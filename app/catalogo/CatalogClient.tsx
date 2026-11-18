@@ -67,6 +67,7 @@ export default function CatalogClient({ initialProducts, initialTotal, catalogTo
   const [products, setProducts] = useState(initialProducts);
   const [total, setTotal] = useState(initialTotal);
   const [query, setQuery] = useState(initialQuery);
+  const [sortMode, setSortMode] = useState<"default" | "name-asc" | "name-desc">("default");
   const [filter, setFilter] = useState<CatalogFilter>(initialFilter);
   const [categories, setCategories] = useState(initialCategories);
   const [quantities, setQuantities] = useState<CartQuantities>({});
@@ -88,6 +89,15 @@ export default function CatalogClient({ initialProducts, initialTotal, catalogTo
   const browseArea = useRef<HTMLDivElement>(null);
 
   const filters = useMemo(() => ["Todos", "Marcas propias", ...categories.filter((category) => !["Todos", "Marcas propias"].includes(category))], [categories]);
+  const visibleProducts = useMemo(() => {
+    if (sortMode === "default") return products;
+    return [...products].sort((a, b) => {
+      const left = `${a.brand} ${displayProductName(a.brand, a.name)}`;
+      const right = `${b.brand} ${displayProductName(b.brand, b.name)}`;
+      const order = left.localeCompare(right, "es", { sensitivity: "base" });
+      return sortMode === "name-asc" ? order : -order;
+    });
+  }, [products, sortMode]);
   const catalogCountText = query.trim() || filter !== "Todos"
     ? `${total} resultado${total === 1 ? "" : "s"} en esta selección · ${catalogTotal} productos en el catálogo.`
     : `${catalogTotal} productos en el catálogo.`;
@@ -254,15 +264,15 @@ export default function CatalogClient({ initialProducts, initialTotal, catalogTo
   return <main className="catalog-page">
     {notice ? <div className="catalog-notice" role="status"><span>{notice}</span><button type="button" onClick={() => setNotice("")} aria-label="Cerrar aviso">×</button></div> : null}
     <div className="catalog-shell"><div id="catalog-browse" ref={browseArea} className="catalog-browse">
-      <header className="catalog-heading"><img className="catalog-brand-logo" src="/brand/merly-import-logo.png" alt={BRAND_NAME} /><div><p>Venta mayorista</p><h1>Catalogo de productos</h1><span>{catalogCountText}</span></div><Link className="catalog-back" href="/">Volver al inicio</Link></header>
-      <section className="catalog-tools" aria-label="Buscar y filtrar"><label><span className="sr-only">Buscar productos</span><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar por producto, marca o presentación" /></label><div role="group" aria-label="Categorías">{filters.map((item) => <button type="button" key={item} className={filter === item ? "active" : ""} onClick={() => setFilter(item)}>{item}</button>)}</div></section>
+      <header className="catalog-heading"><img className="catalog-brand-logo" src="/brand/merly-import-logo.png" alt={BRAND_NAME} /><div><p>Venta mayorista</p><h1>Catálogo mayorista</h1><span>{catalogCountText}</span></div><Link className="catalog-back" href="/">Volver al inicio</Link></header>
+      <section className="catalog-tools" aria-label="Buscar y filtrar"><label><span className="sr-only">Buscar productos</span><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="¿Qué producto necesitas? Busca por nombre o marca" /></label><div role="group" aria-label="Categorías">{filters.map((item) => <button type="button" key={item} className={filter === item ? "active" : ""} onClick={() => setFilter(item)}>{item}</button>)}</div><div className="catalog-sort"><label>Ordenar productos mostrados<select value={sortMode} onChange={(event) => setSortMode(event.target.value as "default" | "name-asc" | "name-desc")}><option value="default">Recomendados</option><option value="name-asc">Nombre A–Z</option><option value="name-desc">Nombre Z–A</option></select></label></div></section>
       {searchError ? <div className="catalog-error" role="alert"><span>{searchError}</span><button type="button" onClick={() => { setSearchError(""); setQuery((current) => `${current} `); window.setTimeout(() => setQuery((current) => current.trimEnd()), 0); }}>Reintentar</button></div> : null}
       {loading ? <p className="catalog-loading" role="status">Actualizando catálogo…</p> : null}
       {!loading && !products.length ? <div className="catalog-empty"><h2>Sin resultados</h2><p>Prueba otra palabra o categoría.</p><button type="button" onClick={() => { setQuery(""); setFilter("Todos"); }}>Limpiar filtros</button></div> : null}
-      <section className="product-grid" aria-busy={loading}>{products.map((product) => {
+      <section className="product-grid" aria-busy={loading}>{visibleProducts.map((product) => {
         const quantity = quantities[product.id] ?? 0;
         const name = displayProductName(product.brand, product.name);
-        return <article className="product-card" key={product.id}><div className="product-image"><img src={product.image} alt={productQuoteName(product)} loading="lazy" width="420" height="420" onError={productImageFallback} /></div><div className="product-info">{product.brand ? <p className="product-brand">{product.brand}</p> : null}<h2>{name}</h2><small className="product-presentation">{product.presentation}</small>{quantity ? <div className="product-added"><button type="button" onClick={() => setQuantity(product, quantity - 1)} aria-label={`Reducir ${product.name}`}>−</button><input type="text" inputMode="numeric" aria-label={`Cantidad de ${product.name}`} value={quantityDrafts[product.id] ?? String(quantity)} onChange={(event) => editQuantity(product.id, event.target.value)} onBlur={() => commitQuantity(product)} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); commitQuantity(product); event.currentTarget.blur(); } }} /><button type="button" onClick={() => setQuantity(product, quantity + 1)} aria-label={`Aumentar ${product.name}`}>+</button><button type="button" className="quote-remove" onClick={() => removeProduct(product.id)}>Quitar</button></div> : <button className="add-product" type="button" onClick={() => addProduct(product)}>Agregar a cotización</button>}</div></article>;
+        return <article className="product-card" key={product.id}><div className="product-image"><img src={product.image} alt={productQuoteName(product)} loading="lazy" width="420" height="420" onError={productImageFallback} /></div><div className="product-info">{product.brand ? <p className="product-brand">{product.brand}</p> : null}<h2>{name}</h2><small className="product-presentation">{product.presentation}</small><small className="refresh-price-note">{product.quoteOnly || !product.tiers.length ? "Precio a confirmar en la cotización" : "Consulta precio según volumen"}</small>{quantity ? <div className="product-added"><button type="button" onClick={() => setQuantity(product, quantity - 1)} aria-label={`Reducir ${product.name}`}>−</button><input type="text" inputMode="numeric" aria-label={`Cantidad de ${product.name}`} value={quantityDrafts[product.id] ?? String(quantity)} onChange={(event) => editQuantity(product.id, event.target.value)} onBlur={() => commitQuantity(product)} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); commitQuantity(product); event.currentTarget.blur(); } }} /><button type="button" onClick={() => setQuantity(product, quantity + 1)} aria-label={`Aumentar ${product.name}`}>+</button><button type="button" className="quote-remove" onClick={() => removeProduct(product.id)}>Quitar</button></div> : <button className="add-product" type="button" onClick={() => addProduct(product)}>Añadir a mi cotización</button>}</div></article>;
       })}</section>
       {hasMore ? <div className="catalog-more"><button type="button" disabled={loadingMore} onClick={loadMore}>{loadingMore ? "Cargando…" : "Mostrar más"}</button>{loadMoreError ? <p role="alert">{loadMoreError} <button type="button" onClick={loadMore}>Reintentar</button></p> : null}</div> : null}
     </div>
@@ -277,8 +287,8 @@ export default function CatalogClient({ initialProducts, initialTotal, catalogTo
       <label className="delivery-select"><span>Entrega</span><select value={delivery} onChange={(event) => setDelivery(event.target.value as Delivery)}><option value="lima">Lima</option><option value="provincia">Provincia</option></select></label>
       {delivery === "lima" && !hasPendingPrices ? <div className={remaining === 0 ? "delivery-progress achieved" : "delivery-progress"}><div><span>{remaining === 0 ? "Delivery gratuito alcanzado" : `Faltan S/ ${remaining.toFixed(2)} para delivery gratuito`}</span><b>Meta S/ {deliveryGoal.toFixed(2)}</b></div><i><span style={{ width: `${Math.min(100, (totalPrice / deliveryGoal) * 100)}%` }} /></i></div> : null}
       {delivery === "provincia" ? <p className="province-note">Entregamos el pedido en la agencia elegida. El flete interprovincial lo paga el cliente.</p> : null}
-      {hasPendingPrices ? <p className="quote-price-note">Los precios y la disponibilidad se confirmarán por WhatsApp.</p> : null}
-      <div className="quote-total"><span>{hasPendingPrices ? "Cotizacion" : "Total referencial"}</span><strong>{hasPendingPrices ? "Por confirmar" : `S/ ${totalPrice.toFixed(2)}`}</strong></div><p className="quote-recipient-note">Se enviara al WhatsApp oficial de Merly Import.</p><button className="send-quote" type="button" onClick={sendQuote}>Enviar por WhatsApp</button></>}
+      {hasPendingPrices ? <p className="quote-price-note">Los precios finales y la disponibilidad se confirman por WhatsApp antes de cerrar el pedido.</p> : null}
+      <div className="quote-total"><span>{hasPendingPrices ? "Cotizacion" : "Total referencial"}</span><strong>{hasPendingPrices ? "Por confirmar" : `S/ ${totalPrice.toFixed(2)}`}</strong></div><p className="quote-recipient-note">Revisarás tu solicitud en WhatsApp antes de enviarla al equipo de Merly Import.</p><button className="send-quote" type="button" onClick={sendQuote}>Enviar por WhatsApp</button></>}
     </aside></div>
     <button className={`mobile-quote-overlay${quoteOpen ? " visible" : ""}`} type="button" aria-label="Cerrar cotización" onClick={closeQuote} />
     {selected.length ? <button className="mobile-quote-bar" type="button" onClick={(event) => openQuote(event.currentTarget)}><span><b>{selected.length}</b><small>{selected.length === 1 ? "producto" : "productos"}</small></span><strong>Ver cotización</strong><em>{mobileTotal}</em></button> : null}
