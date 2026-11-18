@@ -8,7 +8,7 @@ import CatalogClient from "./CatalogClient";
 import CatalogCommercialPortal from "./CatalogCommercialPortal";
 import "./catalog.css";
 import "./catalog-surgical.css";
-import "./editorial-catalog.css";
+import "./wholesale-catalog.css";
 
 export const revalidate = 120;
 export const metadata: Metadata = {
