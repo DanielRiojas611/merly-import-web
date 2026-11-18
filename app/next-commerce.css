@@ -1,4 +1,6 @@
 /* MERLY NEXT — new storefront, isolated from the old home layout. */
+.merly-next .mx-preview-chip{position:sticky;top:0;z-index:99;padding:9px 16px;background:#fff6d5;color:#795100;text-align:center;font-size:12px;font-weight:850;border-bottom:1px solid #e8cc73}
+
 .merly-next{
   --mx-ink:#132a44;--mx-muted:#5c7188;--mx-blue:#005fbd;--mx-deep:#003e82;
   --mx-red:#e32049;--mx-line:#dce5ef;--mx-soft:#f4f7fb;--mx-paper:#fff;
