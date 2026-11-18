@@ -24,6 +24,10 @@ const unitNames: Record<ProductSalesUnit, [string, string]> = {
 };
 
 function digits(value: string) { return value.replace(/\D/g, ""); }
+function trackCommerce(event: string, fields: Record<string, string | number>) {
+  if (typeof window === "undefined") return;
+  (window as typeof window & { gtag?: (...args: unknown[]) => void }).gtag?.("event", event, fields);
+}
 function filterParam(value: string) { return value === "Marcas propias" ? "propias" : value.toLocaleLowerCase("es"); }
 function unitPrice(product: Product, quantity: number) {
   if (product.quoteOnly || !product.tiers.length) return null;
@@ -155,6 +159,7 @@ export default function CatalogClient({ initialProducts, initialTotal, catalogTo
         setTotal(Number(body.total) || body.products.length);
         if (Array.isArray(body.categories) && body.categories.length) setCategories(body.categories);
         setLoadMoreError("");
+        if (query.trim()) trackCommerce("catalog_search", { query_length: query.trim().length, result_count: Number(body.total) || body.products.length });
         const browserParams = new URLSearchParams();
         if (query.trim()) browserParams.set("buscar", query.trim());
         if (filter !== "Todos") browserParams.set("filtro", filterParam(filter));
@@ -199,6 +204,7 @@ export default function CatalogClient({ initialProducts, initialTotal, catalogTo
     setCartProducts((current) => ({ ...current, [product.id]: product }));
     setQuantities((current) => ({ ...current, [product.id]: Math.max(1, current[product.id] ?? 0) }));
     setNotice(`${displayProductName(product.brand, product.name)} agregado a la cotización.`);
+    trackCommerce("catalog_add_to_quote", { item_id: product.id, item_brand: product.brand, quantity: 1 });
   }
   function setQuantity(product: Product, value: number) {
     const quantity = Math.min(999, Math.max(1, normalizeQuantity(value) || 1));
@@ -239,6 +245,7 @@ export default function CatalogClient({ initialProducts, initialTotal, catalogTo
 
   function openQuote(trigger: HTMLElement) {
     quoteTrigger.current = trigger;
+    trackCommerce("catalog_quote_view", { item_count: selected.length });
     window.history.pushState({ ...(window.history.state ?? {}), [QUOTE_HISTORY_KEY]: true }, "");
     setQuoteOpen(true);
   }
@@ -279,7 +286,7 @@ export default function CatalogClient({ initialProducts, initialTotal, catalogTo
     {notice ? <div className="catalog-notice" role="status"><span>{notice}</span><button type="button" onClick={() => setNotice("")} aria-label="Cerrar aviso">×</button></div> : null}
     <div className="catalog-shell"><div id="catalog-browse" ref={browseArea} className="catalog-browse">
       <header className="catalog-heading mc-catalog-heading"><div><p>ENCUENTRA TU PRODUCTO</p><h2>Explora nuestro portafolio</h2><span>{catalogCountText}</span></div><div className="mc-catalog-hint"><strong>Compra mayorista</strong><small>Selecciona cantidades y cotiza fácilmente.</small></div></header>
-      <section className="catalog-tools" aria-label="Buscar y filtrar"><label className="mc-search-label"><span>Buscar en catálogo</span><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="¿Qué producto necesitas? Busca por nombre o marca" /></label><div className="mc-filter-area"><span>Filtrar por categoría</span><div role="group" aria-label="Categorías">{filters.map((item) => <button type="button" key={item} className={filter === item ? "active" : ""} onClick={() => setFilter(item)}>{item}</button>)}</div></div><div className="catalog-sort"><label>Ordenar productos mostrados<select value={sortMode} onChange={(event) => setSortMode(event.target.value as "default" | "name-asc" | "name-desc")}><option value="default">Recomendados</option><option value="name-asc">Nombre A–Z</option><option value="name-desc">Nombre Z–A</option></select></label></div></section>
+      <section className="catalog-tools" aria-label="Buscar y filtrar"><label className="mc-search-label"><span>Buscar en catálogo</span><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="¿Qué producto necesitas? Busca por nombre o marca" /></label><div className="mc-filter-area"><span>Filtrar por categoría</span><div role="group" aria-label="Categorías">{filters.map((item) => <button type="button" key={item} className={filter === item ? "active" : ""} onClick={() => { setFilter(item); trackCommerce("catalog_filter", { category: item }); }}>{item}</button>)}</div></div><div className="catalog-sort"><label>Ordenar productos mostrados<select value={sortMode} onChange={(event) => setSortMode(event.target.value as "default" | "name-asc" | "name-desc")}><option value="default">Recomendados</option><option value="name-asc">Nombre A–Z</option><option value="name-desc">Nombre Z–A</option></select></label></div></section>
       {searchError ? <div className="catalog-error" role="alert"><span>{searchError}</span><button type="button" onClick={() => { setSearchError(""); setQuery((current) => `${current} `); window.setTimeout(() => setQuery((current) => current.trimEnd()), 0); }}>Reintentar</button></div> : null}
       {loading ? <p className="catalog-loading" role="status">Actualizando catálogo…</p> : null}
       {!loading && !products.length ? <div className="catalog-empty"><h2>Sin resultados</h2><p>Prueba otra palabra o categoría.</p><button type="button" onClick={() => { setQuery(""); setFilter("Todos"); }}>Limpiar filtros</button></div> : null}
