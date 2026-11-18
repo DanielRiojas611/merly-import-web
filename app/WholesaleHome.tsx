@@ -87,7 +87,7 @@ export default function WholesaleHome({content,featuredProducts,whatsappNumber,c
     try {
       const raw=window.localStorage.getItem(CART_STORAGE_KEY);
       const parsed:unknown=raw?JSON.parse(raw):{};
-      const next:Record<string,unknown>=parsed&&typeof parsed==="object"&&!Array.isArray(parsed)?{...parsed as Record<string,unknown>}:{};
+      const next:Record<string,unknown>=parsed&&typeof parsed==="object"&&!Array.isArray(parsed)?{...(parsed as Record<string,unknown>)}:{};
       const previous=Number(next[product.id]);
       const valid=Number.isFinite(previous)&&Number.isInteger(previous)&&previous>=1?previous:0;
       next[product.id]=Math.min(999,valid+1);
@@ -143,7 +143,7 @@ export default function WholesaleHome({content,featuredProducts,whatsappNumber,c
         <div className="wh-hero-core">
           <div className="wh-hero-copy">
             <span className="wh-eyebrow"><span className="wh-dot"/> ABASTECIMIENTO PARA NEGOCIOS</span>
-            <h1>Haz que tu negocio tenga <strong>de todo.</strong></h1>
+            <h1>Lo que tu negocio necesita. <strong>Al por mayor.</strong></h1>
             <p>Higiene, limpieza y cuidado personal al por mayor. Explora productos, selecciona cantidades y cotiza sin complicaciones.</p>
             <div className="wh-hero-actions">
               <Link href="/catalogo" className="wh-cta-orange">Ver catálogo mayorista <span>↗</span></Link>
@@ -169,7 +169,7 @@ export default function WholesaleHome({content,featuredProducts,whatsappNumber,c
         </div>
       </div>
       <div className="wh-benefits">
-        <article><span>01</span><div><strong>Mayorista de verdad</strong><p>Presentaciones y pedidos según volumen</p></div></article>
+        <article><span>01</span><div><strong>Compra por volumen</strong><p>Presentaciones y pedidos según volumen</p></div></article>
         <article><span>02</span><div><strong>Tu selección en minutos</strong><p>Elige productos y cantidades en el catálogo</p></div></article>
         <article><span>03</span><div><strong>Atención directa</strong><p>Confirma tu solicitud con el equipo comercial</p></div></article>
       </div>
@@ -182,7 +182,7 @@ export default function WholesaleHome({content,featuredProducts,whatsappNumber,c
       </Link>)}</div>
     </div></section>
     <section className="wh-products wh-section" id="productos"><div className="wh-container">
-      <div className="wh-section-heading"><div><span>SELECCIÓN PARA COMPRAR AL POR MAYOR</span><h2>Productos para reponer hoy</h2><p>Encuentra presentaciones y solicita precios según volumen.</p></div><Link href="/catalogo">Ver más productos ↗</Link></div>
+      <div className="wh-section-heading"><div><span>SELECCIÓN PARA COMPRAR AL POR MAYOR</span><h2>Productos para tu próxima reposición</h2><p>Encuentra presentaciones y solicita precios según volumen.</p></div><Link href="/catalogo">Ver más productos ↗</Link></div>
       <div className="wh-audiences" role="group" aria-label="Tipo de negocio">{audiences.map(a=><button key={a.key} className={segment===a.key?"active":""} aria-pressed={segment===a.key} type="button" onClick={()=>{setSegment(a.key);analytics("segment_selected",{segment:a.key});}}><strong>{a.label}</strong><small>{a.description}</small></button>)}</div>
       {featured.length?<div className="wh-product-grid">{featured.map(product=><ProductCard key={product.id} product={product} onQuickAdd={quickAdd}/>)}</div>:<p className="wh-empty">Consulta el catálogo para ver las opciones disponibles.</p>}
       <div className="wh-viewall"><Link className="wh-cta-orange" href="/catalogo">Explorar catálogo completo <span>↗</span></Link></div>
