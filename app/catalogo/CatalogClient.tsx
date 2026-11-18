@@ -6,6 +6,7 @@ import { withLeadOrigin } from "../lib/lead-origin";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { BRAND_NAME } from "../lib/brand";
+import { CART_STORAGE_KEY } from "../lib/cart-storage";
 import type { CommercialRules } from "../lib/commercial-rules";
 import { displayProductName, normalizeQuantity, productQuoteName } from "../lib/product-utils";
 import type { CatalogFilter } from "../lib/neon-catalog";
@@ -15,7 +16,7 @@ type Delivery = "lima" | "provincia";
 type CartQuantities = Record<string, number>;
 type QuantityDrafts = Record<string, string>;
 
-const CART_KEY = "merly-catalog-cart-v2";
+const CART_KEY = CART_STORAGE_KEY;
 const QUOTE_HISTORY_KEY = "merlyQuoteOpen";
 const unitNames: Record<ProductSalesUnit, [string, string]> = {
   caja: ["caja", "cajas"], unidad: ["unidad", "unidades"], docena: ["docena", "docenas"],
