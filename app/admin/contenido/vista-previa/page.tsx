@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 
 import { products as fallbackProducts } from "../../../catalogo/products";
-import EditorialHome from "../../../EditorialHome";
-import "../../../editorial-home.css";
+import WholesaleHome from "../../../WholesaleHome";
+import "../../../wholesale-home.css";
 import { WHATSAPP_NUMBER } from "../../../lib/brand";
 import { getCommercialRules } from "../../../lib/commercial-rules";
 import { getFeaturedProducts } from "../../../lib/neon-catalog";
@@ -26,7 +26,7 @@ export default async function ContentPreviewPage() {
   ]);
 
   return (
-    <EditorialHome
+    <WholesaleHome
       content={content}
       featuredProducts={featured?.length ? featured : fallbackProducts}
       whatsappNumber={WHATSAPP_NUMBER}
