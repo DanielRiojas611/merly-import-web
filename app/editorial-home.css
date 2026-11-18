@@ -392,3 +392,32 @@
 @media(prefers-reduced-motion:reduce){
  .merly-editorial *{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}
 }
+
+/* Search and CMS-compatible editorial details */
+.merly-editorial .ed-sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.merly-editorial .ed-find{background:#efd792;border-bottom:1px solid #d8c18a;padding:29px 0}
+.merly-editorial .ed-find-grid{display:grid;grid-template-columns:.95fr 1.35fr;gap:36px;align-items:center}
+.merly-editorial .ed-find-grid>div>span{display:block;font-size:10px;letter-spacing:.13em;font-weight:850;color:#635029}
+.merly-editorial .ed-find-grid h2{font-family:var(--ed-serif);font-size:26px;font-weight:400;line-height:1.1;letter-spacing:-.035em;margin:5px 0;color:#31463a}
+.merly-editorial .ed-find form{display:flex;min-width:0;min-height:53px;border:1px solid #b1a579;background:#fffdf7}
+.merly-editorial .ed-find form:focus-within{outline:2px solid var(--ed-forest);outline-offset:2px}
+.merly-editorial .ed-find input{flex:1;min-width:0;border:0;background:transparent;padding:0 18px;color:var(--ed-forest);font-size:14px;outline:0}
+.merly-editorial .ed-find button{border:0;min-width:134px;padding:0 21px;background:var(--ed-forest);color:#fff;font-size:13px;font-weight:850;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.merly-editorial .ed-find button:hover{background:var(--ed-pine)}
+.merly-editorial .ed-find button>span{font-size:19px}
+.merly-editorial .ed-story-program{display:block;font-family:var(--ed-serif);font-size:20px;font-weight:400;color:var(--ed-butter);margin:-7px 0 15px}
+.merly-editorial .ed-logistics-editorial{font-size:13px;line-height:1.5;color:#495f51;max-width:750px;margin:-10px 0 26px}
+@media(max-width:900px){
+ .merly-editorial .ed-find-grid{gap:20px;grid-template-columns:1fr 1.4fr}
+ .merly-editorial .ed-find-grid h2{font-size:22px}
+ .merly-editorial .ed-find button{min-width:98px;padding:0 12px}
+}
+@media(max-width:690px){
+ .merly-editorial .ed-find{padding:20px 0}
+ .merly-editorial .ed-find-grid{grid-template-columns:1fr;gap:13px}
+ .merly-editorial .ed-find-grid h2{font-size:24px}
+ .merly-editorial .ed-find form{min-height:47px}
+ .merly-editorial .ed-find input{font-size:13px;padding:0 12px}
+ .merly-editorial .ed-find button{min-width:93px;padding:0 11px;font-size:12px}
+ .merly-editorial .ed-story-program{font-size:17px}
+}
