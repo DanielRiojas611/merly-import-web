@@ -13,6 +13,7 @@ import { siteUrl } from "./lib/site-url";
 import "./globals.css";
 import "./visual-polish.css";
 import "./commercial-improvements.css";
+import "./merly-commerce-refresh.css";
 
 const publicProduction = process.env.VERCEL_ENV === "production";
 const seoTitle = "Merly Import | Productos de higiene y limpieza al por mayor";
