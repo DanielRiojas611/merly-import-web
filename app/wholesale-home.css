@@ -345,3 +345,21 @@
 @media(prefers-reduced-motion:reduce){
  .merly-wholesale *{transition-duration:.01ms!important;animation-duration:.01ms!important;scroll-behavior:auto!important}
 }
+
+/* Direct add-to-quote from the featured product shelf. */
+.merly-wholesale .wh-product-detail .wh-product-detail-link{
+ background:#e6f4fb!important;color:var(--wh-blue)!important;min-height:32px!important;
+ margin-top:0!important;padding:7px 11px!important;font-size:11px!important;
+ border-radius:6px!important;border:1px solid #c9e4f1!important;
+}
+.merly-wholesale .wh-product-detail .wh-product-detail-link:hover{background:#d3edf9!important}
+.merly-wholesale .wh-product-detail .wh-quickadd{
+ display:block;width:100%;min-height:41px;margin-top:7px;padding:8px 11px;border:0;border-radius:7px;
+ background:var(--wh-orange);color:#fff;font-size:12px;font-weight:870;text-align:center;
+}
+.merly-wholesale .wh-product-detail .wh-quickadd:hover{background:var(--wh-orange-hover)}
+@media(max-width:670px){
+ .merly-wholesale .wh-product-detail h3{font-size:14px}
+ .merly-wholesale .wh-product-detail .wh-product-detail-link{font-size:10px!important;min-height:31px!important;padding:6px 8px!important}
+ .merly-wholesale .wh-product-detail .wh-quickadd{font-size:10px;min-height:38px;padding:7px 5px}
+}
