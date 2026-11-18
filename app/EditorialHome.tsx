@@ -99,7 +99,9 @@ export default function EditorialHome({
 
   useEffect(() => {
     const stored = window.localStorage.getItem(SEGMENT_STORAGE);
-    if (segments.some((item) => item.key === stored)) setSegment(stored as Segment);
+    if (!segments.some((item) => item.key === stored)) return;
+    const timer = window.setTimeout(() => setSegment(stored as Segment), 0);
+    return () => window.clearTimeout(timer);
   }, []);
 
   function chooseSegment(next: Segment) {
