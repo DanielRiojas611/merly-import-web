@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 
 import { products as fallbackProducts } from "../../../catalogo/products";
-import HomeClient from "../../../HomeClient";
+import CommerceHome from "../../../CommerceHome";
+import "../../../next-commerce.css";
 import { WHATSAPP_NUMBER } from "../../../lib/brand";
 import { getCommercialRules } from "../../../lib/commercial-rules";
 import { getFeaturedProducts } from "../../../lib/neon-catalog";
@@ -25,7 +26,7 @@ export default async function ContentPreviewPage() {
   ]);
 
   return (
-    <HomeClient
+    <CommerceHome
       content={content}
       featuredProducts={featured?.length ? featured : fallbackProducts}
       whatsappNumber={WHATSAPP_NUMBER}
