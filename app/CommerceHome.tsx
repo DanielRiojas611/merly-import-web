@@ -66,12 +66,13 @@ function FeaturedProduct({ product }: { product: Product }) {
   );
 }
 export default function CommerceHome({
-  content, featuredProducts, whatsappNumber, commercialRules,
+  content, featuredProducts, whatsappNumber, commercialRules, previewMode = false,
 }: {
   content: SiteContent;
   featuredProducts: Product[];
   whatsappNumber: string;
   commercialRules: CommercialRules;
+  previewMode?: boolean;
 }) {
   const [slide, setSlide] = useState(0);
   const [segment, setSegment] = useState<Segment>("bodega");
@@ -109,6 +110,7 @@ export default function CommerceHome({
   if (!current) return null;
   return (
     <main className="merly-next">
+      {previewMode ? <div className="mx-preview-chip">Vista previa de contenido · sin publicar</div> : null}
       <div className="mx-announcement">
         <div className="mx-container">
           <span><i aria-hidden="true" /> Mayoristas de higiene, limpieza y cuidado personal</span>
@@ -122,7 +124,7 @@ export default function CommerceHome({
           <form className="mx-search" action="/catalogo" role="search">
             <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5" /><path d="m15.5 15.5 5 5" /></svg>
             <input name="buscar" maxLength={100} aria-label="Buscar productos en el catálogo" placeholder="Busca productos, marcas o presentaciones..." />
-            <button type="submit" aria-label="Buscar en catálogo">Buscar</button>
+            <button type="submit" aria-label="Buscar en catálogo">{settings.labels.searchButton}</button>
           </form>
           <a className="mx-header-contact" href={waQuote} target="_blank" rel="noreferrer" onClick={() => tracking("whatsapp_click", { placement: "header" })}>
             <span>¿Necesitas ayuda?</span><strong>Habla con ventas ↗</strong>
@@ -137,7 +139,7 @@ export default function CommerceHome({
             <a href="#destacados" onClick={linkClose}>Más pedidos</a>
             <a href="#entregas" onClick={linkClose}>Entregas</a>
             <a href="#preventa" onClick={linkClose}>Preventa</a>
-            <a className="mx-nav-mobile-quote" href="#cotizar" onClick={linkClose}>Solicitar cotización</a>
+            <a className="mx-nav-mobile-quote" href="#cotizar" onClick={linkClose}>{settings.labels.headerQuote}</a>
           </div>
         </nav>
       </header>
@@ -164,13 +166,13 @@ export default function CommerceHome({
             ) : null}
           </div>
           <div className="mx-hero-aside">
-            <Link href="/catalogo?filtro=propias" className="mx-feature-tile mx-tile-one">
-              <div><small>PORTAFOLIO</small><h2>Descubre nuestras marcas propias</h2><span>Explorar productos ↗</span></div>
-              <img src={siteAssets.banners.ownBrands} alt="" loading="lazy" />
-            </Link>
-            <a href="#entregas" className="mx-feature-tile mx-tile-two">
-              <div><small>DESPACHO COORDINADO</small><h2>Tu negocio no se detiene.</h2><span>Conoce las entregas ↗</span></div>
-              <img src={siteAssets.banners.coordinatedDelivery} alt="" loading="lazy" />
+            <a href={settings.sideBanners.presale.ctaHref} className="mx-feature-tile mx-tile-one">
+              <div><small>{settings.sideBanners.presale.kicker}</small><h2>{settings.sideBanners.presale.title}</h2><span>{settings.sideBanners.presale.ctaLabel} ↗</span></div>
+              <img src={settings.sideBanners.presale.imageUrl || siteAssets.banners.presale} alt="" loading="lazy" />
+            </a>
+            <a href={settings.sideBanners.delivery.ctaHref} className="mx-feature-tile mx-tile-two">
+              <div><small>{settings.sideBanners.delivery.kicker}</small><h2>{settings.sideBanners.delivery.title}</h2><span>{settings.sideBanners.delivery.ctaLabel} ↗</span></div>
+              <img src={settings.sideBanners.delivery.imageUrl || siteAssets.banners.coordinatedDelivery} alt="" loading="lazy" />
             </a>
           </div>
         </div>
@@ -184,7 +186,7 @@ export default function CommerceHome({
       </section>
       <section className="mx-categories mx-section" id="categorias">
         <div className="mx-container">
-          <div className="mx-section-head"><div><span className="mx-section-label">COMPRA POR CATEGORÍA</span><h2>Todo para abastecer tu negocio.</h2><p>Encuentra productos por familia antes de preparar tu cotización.</p></div><Link href="/catalogo" className="mx-text-action">Ver todo el catálogo ↗</Link></div>
+          <div className="mx-section-head"><div><span className="mx-section-label">COMPRA POR CATEGORÍA</span><h2>Todo para abastecer tu negocio.</h2><p>Encuentra productos por familia antes de preparar tu cotización.</p></div><Link href="/catalogo" className="mx-text-action">{settings.labels.catalogButton} ↗</Link></div>
           <div className="mx-category-grid">
             {categories.map((item) => (
               <Link className={"mx-category mx-cat-" + item.style} key={item.name} href={item.href}>
@@ -240,7 +242,7 @@ export default function CommerceHome({
             <div className="mx-form-row"><label>Nombre o negocio<input name="name" required maxLength={100} autoComplete="organization" placeholder="Nombre o razón comercial" /></label><label>Distrito o provincia<input name="location" required maxLength={100} autoComplete="address-level2" placeholder="Ej. Comas, Lima" /></label></div>
             <label>¿Qué producto necesitas?<input name="product" required maxLength={180} placeholder="Ej. Shampoo por caja" /></label>
             <label>Cantidad aproximada (opcional)<input name="quantity" maxLength={60} placeholder="Ej. 20 cajas" /></label>
-            <button type="submit">Continuar por WhatsApp <span>↗</span></button>
+            <button type="submit">{settings.labels.quoteButton} <span>↗</span></button>
             <p>El envío abre WhatsApp para que revises tu mensaje antes de enviarlo.</p>
           </form>
         </div>
