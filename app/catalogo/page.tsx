@@ -52,7 +52,8 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
   catch (error) { console.error("No se pudieron cargar las categorías", error); }
   const filter = resolveFilter(valueOf(params.filtro), categories);
   let page = fallbackPage(query, filter);
-  try { page = (await getPublishedProductsPage({ limit: 24, query, filter })) ?? page; }
+  let totalReliable = false;
+  try { const databasePage = await getPublishedProductsPage({ limit: 24, query, filter }); if (databasePage) { page = databasePage; totalReliable = true; } }
   catch (error) { console.error("No se pudo renderizar el catálogo desde la base", error); }
   let catalogTotal = page.total;
   if (query || filter !== "Todos") {
@@ -60,7 +61,7 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
     catch (error) { console.error("No se pudo cargar el total completo del catálogo", error); catalogTotal = publicFallbackProducts().length; }
   }
   return <>
-    <CatalogClient initialProducts={page.products} initialTotal={page.total} catalogTotal={catalogTotal} initialQuery={query} initialFilter={filter} initialCategories={categories} whatsappNumber={WHATSAPP_NUMBER} commercialRules={getCommercialRules()} />
+    <CatalogClient initialTotalReliable={totalReliable} initialProducts={page.products} initialTotal={page.total} catalogTotal={catalogTotal} initialQuery={query} initialFilter={filter} initialCategories={categories} whatsappNumber={WHATSAPP_NUMBER} commercialRules={getCommercialRules()} />
     <CatalogCommercialPortal />
   </>;
 }

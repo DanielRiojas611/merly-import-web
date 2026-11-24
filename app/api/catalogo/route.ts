@@ -4,6 +4,7 @@ import { comparableText, displayProductName, isOwnBrand, normalizeBrand, publicP
 
 export const revalidate = 120;
 function numberParam(value: string | null, fallback: number, maximum: number) {
+  if (value === null || !value.trim()) return fallback;
   const parsed = Number(value);
   return Number.isFinite(parsed) ? Math.min(maximum, Math.max(0, Math.trunc(parsed))) : fallback;
 }
@@ -44,7 +45,7 @@ export async function GET(request: Request) {
       return Response.json({ products: resolved }, { headers: { "Cache-Control": "private, no-store" } });
     } catch (error) {
       console.error("Cart product reconciliation failed", error);
-      return Response.json({ products: publicFallbackProducts().filter((product) => ids.includes(product.id)) }, { headers: { "Cache-Control": "private, no-store" } });
+      return Response.json({ error: "CATALOG_TEMPORARILY_UNAVAILABLE" }, { status: 503, headers: { "Cache-Control": "private, no-store" } });
     }
   }
   const query = (url.searchParams.get("q") ?? "").replace(/\s+/g, " ").trim().slice(0, 100);
@@ -55,12 +56,12 @@ export async function GET(request: Request) {
     const filter = resolveFilter(url.searchParams.get("filter"), categories);
     const databasePage = await getPublishedProductsPage({ query, filter, limit, offset });
     const page = databasePage ?? fallbackPage(query, filter, limit, offset);
-    return Response.json({ ...page, categories, hasMore: offset + page.products.length < page.total }, { headers: { "Cache-Control": "public, s-maxage=120, stale-while-revalidate=600" } });
+    return Response.json({ ...page, totalReliable: Boolean(databasePage), categories, hasMore: offset + page.products.length < page.total }, { headers: { "Cache-Control": "public, s-maxage=120, stale-while-revalidate=600" } });
   } catch (error) {
     console.error("Catalog database read failed", error);
     const categories = fallbackCategories();
     const filter = resolveFilter(url.searchParams.get("filter"), categories);
     const page = fallbackPage(query, filter, limit, offset);
-    return Response.json({ ...page, categories, hasMore: offset + page.products.length < page.total, databaseConfigured: isCatalogDatabaseConfigured() }, { headers: { "Cache-Control": "no-store" } });
+    return Response.json({ ...page, totalReliable: false, categories, hasMore: offset + page.products.length < page.total, databaseConfigured: isCatalogDatabaseConfigured() }, { headers: { "Cache-Control": "no-store" } });
   }
 }

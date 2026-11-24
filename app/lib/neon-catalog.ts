@@ -76,6 +76,7 @@ const rankedProducts = `WITH ranked AS (
 export function isCatalogDatabaseConfigured() { return Boolean(process.env.DATABASE_URL?.trim()); }
 export function catalogDatabaseErrorCode(error: unknown) {
   const message = error instanceof Error ? error.message : "";
+  if (/exceeded.*quota|quota.*exceeded|HTTP status 402/i.test(message)) return "quota-exceeded";
   if (message.includes("DATABASE_URL_INVALID_FORMAT")) return "invalid-format";
   if (/password authentication|authentication failed|28P01/i.test(message)) return "credentials";
   if (/fetch failed|ENOTFOUND|ECONN|timeout|network/i.test(message)) return "network";

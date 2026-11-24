@@ -54,7 +54,8 @@ function productImageFallback(event: React.SyntheticEvent<HTMLImageElement>) {
   if (!image.src.endsWith("/products/product-placeholder.svg")) image.src = "/products/product-placeholder.svg";
 }
 
-export default function CatalogClient({ initialProducts, initialTotal, catalogTotal, initialQuery, initialFilter, initialCategories, whatsappNumber, commercialRules }: {
+export default function CatalogClient({ initialTotalReliable, initialProducts, initialTotal, catalogTotal, initialQuery, initialFilter, initialCategories, whatsappNumber, commercialRules }: {
+  initialTotalReliable: boolean;
   initialProducts: Product[];
   initialTotal: number;
   catalogTotal: number;
@@ -66,6 +67,7 @@ export default function CatalogClient({ initialProducts, initialTotal, catalogTo
 }) {
   const [products, setProducts] = useState(initialProducts);
   const [total, setTotal] = useState(initialTotal);
+  const [totalReliable, setTotalReliable] = useState(initialTotalReliable);
   const [query, setQuery] = useState(initialQuery);
   const [filter, setFilter] = useState<CatalogFilter>(initialFilter);
   const [categories, setCategories] = useState(initialCategories);
@@ -88,7 +90,7 @@ export default function CatalogClient({ initialProducts, initialTotal, catalogTo
   const browseArea = useRef<HTMLDivElement>(null);
 
   const filters = useMemo(() => ["Todos", "Marcas propias", ...categories.filter((category) => !["Todos", "Marcas propias"].includes(category))], [categories]);
-  const catalogCountText = query.trim() || filter !== "Todos"
+  const catalogCountText = !totalReliable ? `${total} productos de respaldo disponibles. El catálogo completo está temporalmente sin conexión.` : query.trim() || filter !== "Todos"
     ? `${total} resultado${total === 1 ? "" : "s"} en esta selección · ${catalogTotal} productos en el catálogo.`
     : `${catalogTotal} productos en el catálogo.`;
 
@@ -100,6 +102,7 @@ export default function CatalogClient({ initialProducts, initialTotal, catalogTo
       if (!ids.length) { if (!cancelled) setHydrated(true); return; }
       try {
         const response = await fetch(`/api/catalogo?ids=${encodeURIComponent(ids.join(","))}`, { cache: "no-store" });
+        if (!response.ok) throw new Error("CART_RECONCILIATION_UNAVAILABLE");
         const body = await response.json() as { products?: Product[] };
         const current = response.ok && Array.isArray(body.products) ? body.products : [];
         const byId = Object.fromEntries(current.map((product) => [product.id, product]));
@@ -111,7 +114,7 @@ export default function CatalogClient({ initialProducts, initialTotal, catalogTo
           if (removed) setNotice(`${removed} producto${removed === 1 ? " dejó" : "s dejaron"} de estar disponible y se retiró de la cotización.`);
         }
       } catch {
-        if (!cancelled) setNotice("No se pudo recuperar la cotización guardada. Agrega los productos nuevamente.");
+        if (!cancelled) { setQuantities(stored); setNotice("Tu cotización sigue guardada. Recarga la página cuando el catálogo esté disponible para recuperarla."); }
       } finally { if (!cancelled) setHydrated(true); }
     }
     void hydrateCart();
@@ -138,10 +141,11 @@ export default function CatalogClient({ initialProducts, initialTotal, catalogTo
       try {
         const params = new URLSearchParams({ q: query.trim(), filter, limit: "24", offset: "0" });
         const response = await fetch(`/api/catalogo?${params}`, { signal: controller.signal });
-        const body = await response.json() as { products?: Product[]; total?: number; categories?: string[] };
+        const body = await response.json() as { products?: Product[]; total?: number; categories?: string[]; totalReliable?: boolean };
         if (!response.ok || !Array.isArray(body.products)) throw new Error("CATALOG_FAILED");
         if (sequence !== searchSequence.current) return;
         setProducts(body.products);
+        setTotalReliable(body.totalReliable !== false);
         setTotal(Number(body.total) || body.products.length);
         if (Array.isArray(body.categories) && body.categories.length) setCategories(body.categories);
         setLoadMoreError("");
@@ -217,9 +221,10 @@ export default function CatalogClient({ initialProducts, initialTotal, catalogTo
     try {
       const params = new URLSearchParams({ q: query.trim(), filter, limit: "24", offset: String(products.length) });
       const response = await fetch(`/api/catalogo?${params}`);
-      const body = await response.json() as { products: Product[]; total?: number; categories?: string[] };
+      const body = await response.json() as { products: Product[]; total?: number; categories?: string[]; totalReliable?: boolean };
       if (!response.ok || !Array.isArray(body.products)) throw new Error("LOAD_MORE_FAILED");
       if (sequence !== loadSequence.current || signature !== `${query.trim()}|${filter}|${products.length}`) return;
+      setTotalReliable(body.totalReliable !== false);
       setProducts((current) => [...current, ...body.products.filter((product) => !current.some((existing) => existing.id === product.id))]);
       setTotal(Number(body.total) || total);
       if (Array.isArray(body.categories) && body.categories.length) setCategories(body.categories);
