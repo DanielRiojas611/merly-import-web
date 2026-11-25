@@ -1,3 +1,4 @@
+import AdminUnavailable from "./AdminUnavailable";
 import { redirect } from "next/navigation";
 import { BRAND_NAME } from "../lib/brand";
 import { isAdminAuthenticated } from "../lib/admin-auth";
@@ -10,7 +11,9 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
   if (!(await isAdminAuthenticated())) redirect("/admin/login");
-  const [products, drafts] = await Promise.all([listAdminProducts(), listProductDrafts()]);
+  let products, drafts;
+  try { [products, drafts] = await Promise.all([listAdminProducts(), listProductDrafts()]); }
+  catch (error) { console.error("Admin data unavailable", error); return <AdminUnavailable moduleName="Productos" />; }
 
   return <main className="admin-page">
     <header className="admin-header">
