@@ -1,3 +1,4 @@
+import { unstable_cache, revalidateTag, revalidatePath } from "next/cache";
 import { neon } from "@neondatabase/serverless";
 import { siteAssets } from "../site-content";
 import { CONTACT_EMAIL, FACEBOOK_URL, TIKTOK_URL, WHATSAPP_LABEL, WHATSAPP_NUMBER } from "./brand";
@@ -114,24 +115,21 @@ function normalizeSiteContent(value: unknown, fallback: SiteContent): SiteConten
 async function getSetting(key: string) { const rows = await database().query(`SELECT value FROM site_settings WHERE key=$1 LIMIT 1`, [key]); return (rows[0] as { value?: unknown } | undefined)?.value; }
 async function putSetting(key: string, value: unknown) { await database().query(`INSERT INTO site_settings (key,value,updated_at) VALUES ($1,$2::jsonb,NOW()) ON CONFLICT(key) DO UPDATE SET value=EXCLUDED.value,updated_at=NOW()`, [key, JSON.stringify(value)]); }
 
-export async function getSiteContent(): Promise<SiteContent> {
-  if (!databaseUrl()) return defaultSiteContent;
+async function readDatabaseSiteContent(): Promise<SiteContent> {
   const sql = database();
-  try {
-    const [bannerRows, settingsRows] = await Promise.all([
-      sql.query(`SELECT id,kicker,title,body,cta_label AS "ctaLabel",cta_href AS "ctaHref",theme,COALESCE(image_url,'') AS "imageUrl",COALESCE(mobile_image_url,'') AS "mobileImageUrl",is_active AS "isActive",sort_order AS "sortOrder" FROM banners ORDER BY sort_order,id`),
-      sql.query(`SELECT value FROM site_settings WHERE key=$1 LIMIT 1`, [LIVE_SETTINGS_KEY]),
-    ]);
-    return {
-      banners: (bannerRows.length ? bannerRows : defaultBanners) as SiteBanner[],
-      settings: normalizeHomepageSettings((settingsRows[0] as { value?: unknown } | undefined)?.value),
-    };
-  } catch (error) {
-    console.error("site_content_read_failed", error);
-    return defaultSiteContent;
-  }
+  const [bannerRows, settingsRows] = await Promise.all([
+    sql.query(`SELECT id,kicker,title,body,cta_label AS "ctaLabel",cta_href AS "ctaHref",theme,COALESCE(image_url,'') AS "imageUrl",COALESCE(mobile_image_url,'') AS "mobileImageUrl",is_active AS "isActive",sort_order AS "sortOrder" FROM banners ORDER BY sort_order,id`),
+    sql.query(`SELECT value FROM site_settings WHERE key=$1 LIMIT 1`, [LIVE_SETTINGS_KEY]),
+  ]);
+  return { banners: (bannerRows.length ? bannerRows : defaultBanners) as SiteBanner[], settings: normalizeHomepageSettings((settingsRows[0] as { value?: unknown } | undefined)?.value) };
 }
-export async function getSiteContentDraft(): Promise<SiteContent> { const live = await getSiteContent(); const draft = await getSetting(DRAFT_SETTINGS_KEY); return draft ? normalizeSiteContent(draft, live) : live; }
+const readCachedSiteContent = unstable_cache(readDatabaseSiteContent, ["merly-home-content"], { revalidate: 3600, tags: ["merly-home-content"] });
+export async function getSiteContent({ fresh = false }: { fresh?: boolean } = {}): Promise<SiteContent> {
+  if (!databaseUrl()) return defaultSiteContent;
+  try { return await (fresh ? readDatabaseSiteContent() : readCachedSiteContent()); }
+  catch (error) { console.error("site_content_read_failed", error); return defaultSiteContent; }
+}
+export async function getSiteContentDraft(): Promise<SiteContent> { const live = await getSiteContent({ fresh: true }); const draft = await getSetting(DRAFT_SETTINGS_KEY); return draft ? normalizeSiteContent(draft, live) : live; }
 function validHref(value: string) { return value.startsWith("/") || value.startsWith("#") || value.startsWith("https://"); }
 function validImage(value: string) { return !value || value.startsWith("/") || value.startsWith("https://"); }
 function validateSideBanner(value: SideBannerContent) { if (!value.kicker || !value.title || !value.body || !value.ctaLabel) throw new Error("SIDE_BANNER_REQUIRED_FIELDS"); if (!validHref(value.ctaHref) || !validImage(value.imageUrl)) throw new Error("SIDE_BANNER_INVALID_ACTION"); }
@@ -177,20 +175,22 @@ async function replaceLiveContent(content: SiteContent, previous: SiteContent) {
      ON CONFLICT(key) DO UPDATE SET value=EXCLUDED.value,updated_at=NOW()`,
     [JSON.stringify(banners), PREVIOUS_SETTINGS_KEY, JSON.stringify(previous), LIVE_SETTINGS_KEY, JSON.stringify(normalized.settings), DRAFT_SETTINGS_KEY, JSON.stringify(normalized)],
   );
-  return getSiteContent();
+  revalidateTag("merly-home-content", { expire: 0 });
+  revalidatePath("/");
+  return getSiteContent({ fresh: true });
 }
 
 export async function saveSiteContentDraft(content: SiteContent) {
-  const live = await getSiteContent(); const normalized = normalizeSiteContent(content, live); validateContent(normalized);
+  const live = await getSiteContent({ fresh: true }); const normalized = normalizeSiteContent(content, live); validateContent(normalized);
   await putSetting(DRAFT_SETTINGS_KEY, normalized); return normalized;
 }
 export async function publishSiteContent(content?: SiteContent) {
-  const current = await getSiteContent();
+  const current = await getSiteContent({ fresh: true });
   const draft = content ? normalizeSiteContent(content, current) : await getSiteContentDraft();
   return replaceLiveContent(draft, current);
 }
 export async function restorePreviousSiteContent() {
-  const current = await getSiteContent(); const previousValue = await getSetting(PREVIOUS_SETTINGS_KEY);
+  const current = await getSiteContent({ fresh: true }); const previousValue = await getSetting(PREVIOUS_SETTINGS_KEY);
   if (!previousValue) return null;
   return replaceLiveContent(normalizeSiteContent(previousValue, current), current);
 }

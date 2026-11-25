@@ -1,3 +1,4 @@
+import { synchronizePublishedCatalog } from "../../../../lib/publish-catalog";
 import { NextResponse } from "next/server";
 import { getAdminSession } from "../../../../lib/admin-auth";
 import { setAdminProductActive } from "../../../../lib/admin-products";
@@ -17,7 +18,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
   if (typeof body.isActive !== "boolean") return json({ error: "invalid_state" }, 400);
   try {
     await setAdminProductActive(id, body.isActive, session.username);
-    return json({ ok: true });
+    return json({ ok: true, warning: await synchronizePublishedCatalog() });
   } catch (error) {
     const code = error instanceof Error ? error.message : "product_update_failed";
     return json({ error: code }, code === "PRODUCT_NOT_FOUND" ? 404 : 500);

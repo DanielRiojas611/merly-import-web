@@ -1,3 +1,4 @@
+import { readPublishedCatalog } from "./published-catalog";
 import { neon } from "@neondatabase/serverless";
 import type { Product, ProductSalesUnit, ProductTier } from "../catalogo/products";
 import { comparableText, displayProductPresentation, isOwnBrand, isPublicProductComplete, normalizeBrand, publicProductBadge, publicProductImage } from "./product-utils";
@@ -83,17 +84,15 @@ export function catalogDatabaseErrorCode(error: unknown) {
   return "unreachable";
 }
 export async function getCatalogCategories(): Promise<string[] | null> {
-  const url = connectionString();
-  if (!url) return null;
-  const rows = await withTimeout(neon(url).query(
-    `SELECT DISTINCT trim(category) AS category FROM products
-     WHERE is_active=TRUE AND trim(COALESCE(category,''))<>''
-       AND lower(concat_ws(' ', name, description, presentation)) NOT LIKE '%por confirmar%'
-     ORDER BY trim(category)`,
-  ) as unknown as Promise<Array<{ category: string }>>);
-  return rows.map((row) => normalizeCategory(row.category)).filter(Boolean);
+  return [...new Set((await readPublishedCatalog()).map(p => normalizeCategory(p.category)).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
 }
-export async function getPublishedProductsPage({ limit = 24, offset = 0, query = "", filter = "Todos" }: { limit?: number; offset?: number; query?: string; filter?: CatalogFilter | string } = {}): Promise<CatalogPage | null> {
+export async function getPublishedProductsPage({ limit = 24, offset = 0, query = "", filter = "Todos", databaseOnly = false }: { limit?: number; offset?: number; query?: string; filter?: CatalogFilter | string; databaseOnly?: boolean } = {}): Promise<CatalogPage | null> {
+  if (!databaseOnly) {
+    const term = comparableText(query).slice(0, 100);
+    const chosen = normalizeFilter(filter);
+    const products = (await readPublishedCatalog()).filter(p => (!term || comparableText(`${p.brand} ${p.name} ${p.description ?? ""} ${p.presentation} ${p.category}`).includes(term)) && (chosen === "Todos" || (chosen === "Marcas propias" ? p.ownBrand : comparableText(p.category) === comparableText(chosen))));
+    return { products: products.slice(normalizeOffset(offset), normalizeOffset(offset) + normalizeLimit(limit)), total: products.length };
+  }
   const url = connectionString();
   if (!url) return null;
   const safeLimit = normalizeLimit(limit);
@@ -112,38 +111,25 @@ export async function getPublishedProductsPage({ limit = 24, offset = 0, query =
   ) as unknown as Promise<ProductRow[]>);
   return { products: rows.map(mapRow).filter((product): product is Product => Boolean(product)), total: rows.length ? Number(rows[0].total) || 0 : 0 };
 }
-export async function getPublishedProductsByIds(ids: string[]): Promise<Product[]> {
+export async function getDatabasePublishedCatalog(): Promise<Product[]> {
   const url = connectionString();
-  const safeIds = [...new Set(ids.filter((id) => /^[a-zA-Z0-9._-]{1,120}$/.test(id)))].slice(0, 100);
-  if (!url || !safeIds.length) return [];
-  const rows = await withTimeout(neon(url).query(
-    `${rankedProducts} SELECT ${productSelect} FROM ranked r
-     WHERE r.duplicate_rank=1 AND r.id = ANY($1::text[]) ORDER BY array_position($1::text[], r.id)`,
-    [safeIds],
-  ) as unknown as Promise<ProductRow[]>);
-  return rows.map(mapRow).filter((product): product is Product => Boolean(product));
-}
-export async function getPublishedProducts(): Promise<Product[] | null> {
-  const page = await getPublishedProductsPage({ limit: 48 });
-  if (!page) return null;
-  const products = [...page.products]; let offset = products.length;
-  while (offset < page.total && offset < 1_000) {
-    const next = await getPublishedProductsPage({ limit: 48, offset });
-    if (!next?.products.length) break;
-    products.push(...next.products); offset += next.products.length;
-  }
-  return products;
-}
-export async function getFeaturedProducts(limit = 5): Promise<Product[] | null> {
-  const url = connectionString();
-  if (!url) return null;
-  const safeLimit = Math.min(12, Math.max(1, Math.trunc(limit)));
+  if (!url) throw new Error("CATALOG_DATABASE_UNAVAILABLE");
   const rows = await withTimeout(neon(url).query(
     `${rankedProducts} SELECT ${productSelect} FROM ranked r WHERE r.duplicate_rank=1
-     ORDER BY r.is_featured DESC, r.own_brand DESC, r.sort_order, r.brand, r.name LIMIT $1`,
-    [safeLimit],
+     ORDER BY r.is_featured DESC, r.sort_order, r.brand, r.name, r.id`,
   ) as unknown as Promise<ProductRow[]>);
-  return rows.map(mapRow).filter((product): product is Product => Boolean(product));
+  const products = rows.map(mapRow).filter((p): p is Product => Boolean(p));
+  if (rows.length > 5000 || products.length !== rows.length) throw new Error("CATALOG_SNAPSHOT_INCOMPLETE");
+  return products;
+}
+export async function getPublishedProductsByIds(ids: string[]): Promise<Product[]> {
+  const safeIds = [...new Set(ids.filter(id => /^[a-zA-Z0-9._-]{1,120}$/.test(id)))].slice(0, 100);
+  const products = new Map((await readPublishedCatalog()).map(p => [p.id, p]));
+  return safeIds.flatMap(id => products.has(id) ? [products.get(id)!] : []);
+}
+export async function getPublishedProducts(): Promise<Product[] | null> { return readPublishedCatalog(); }
+export async function getFeaturedProducts(limit = 5): Promise<Product[] | null> {
+  return [...await readPublishedCatalog()].sort((a,b) => Number(Boolean(b.isFeatured)) - Number(Boolean(a.isFeatured)) || Number(b.ownBrand) - Number(a.ownBrand) || (a.sortOrder ?? 0) - (b.sortOrder ?? 0) || a.brand.localeCompare(b.brand, "es") || a.name.localeCompare(b.name, "es")).slice(0, Math.min(12, Math.max(1, Math.trunc(limit))));
 }
 export async function pingCatalogDatabase() {
   const url = connectionString();

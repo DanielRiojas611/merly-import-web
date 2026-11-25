@@ -1,3 +1,4 @@
+import { synchronizePublishedCatalog } from "../../../../lib/publish-catalog";
 import { NextResponse } from "next/server";
 import { getAdminSession } from "../../../../lib/admin-auth";
 import { publishProductDrafts } from "../../../../lib/admin-drafts";
@@ -20,7 +21,7 @@ export async function POST(request: Request) {
 
   try {
     const published = await publishProductDrafts(ids, session.username);
-    return json({ ok: true, published });
+    return json({ ok: true, published, warning: await synchronizePublishedCatalog() });
   } catch (error) {
     const eventId = crypto.randomUUID();
     console.error("Product publish failed", { eventId, error });

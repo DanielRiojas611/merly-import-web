@@ -1,3 +1,4 @@
+import RefreshCatalog from "./RefreshCatalog";
 import AdminUnavailable from "./AdminUnavailable";
 import { redirect } from "next/navigation";
 import { BRAND_NAME } from "../lib/brand";
@@ -27,6 +28,7 @@ export default async function AdminPage() {
         <form action="/api/admin/logout" method="post"><button type="submit">Cerrar sesion</button></form>
       </nav>
     </header>
+    <RefreshCatalog />
     <AdminCatalog initialProducts={products} initialDrafts={drafts} />
   </main>;
 }

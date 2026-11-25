@@ -1,3 +1,4 @@
+import { synchronizePublishedCatalog } from "../../../../../../../lib/publish-catalog";
 import { NextResponse } from "next/server";
 import { getAdminSession } from "../../../../../../../lib/admin-auth";
 import { restoreProductFromHistory } from "../../../../../../../lib/admin-products";
@@ -17,7 +18,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
   }
   try {
     const product = await restoreProductFromHistory(id, numericAuditId, session.username);
-    return json({ ok: true, product });
+    return json({ ok: true, product, warning: await synchronizePublishedCatalog() });
   } catch (error) {
     const code = error instanceof Error ? error.message : "restore_failed";
     return json({ error: code }, code === "AUDIT_SNAPSHOT_NOT_FOUND" ? 404 : 500);

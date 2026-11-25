@@ -145,7 +145,8 @@ export default function AdminPricing({ initialProducts, initialDrafts }: { initi
       });
       if (!response.ok) throw new Error("PUBLISH_FAILED");
       await refresh();
-      setMessage(quoteOnly ? "Producto publicado sin precio visible." : "Precios publicados correctamente.");
+      const result = await response.json() as { warning?: string };
+      setMessage(result.warning || (quoteOnly ? "Producto publicado sin precio visible." : "Precios publicados correctamente."));
     } catch {
       setMessage("No se pudieron publicar los precios. El borrador se conserva.");
     } finally {
