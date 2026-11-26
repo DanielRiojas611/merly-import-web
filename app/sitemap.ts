@@ -32,6 +32,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly" as const,
       priority: .7,
     })),
+    { url: new URL("/distribuidor", base).toString() },
     { url: new URL("/privacidad", base).toString(), lastModified: modified, changeFrequency: "yearly", priority: .2 },
   ];
 }
