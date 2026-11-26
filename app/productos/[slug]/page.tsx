@@ -91,8 +91,19 @@ export default async function ProductPage({ params }: ProductPageProps) {
     additionalProperty: [{ "@type": "PropertyValue", name: "Presentación mayorista", value: product.presentation }],
   };
 
+  const breadcrumbs = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Inicio", item: new URL("/", base).toString() },
+      { "@type": "ListItem", position: 2, name: "Productos", item: new URL("/productos", base).toString() },
+      { "@type": "ListItem", position: 3, name: fullName, item: canonical },
+    ],
+  };
+
   return <main className="products-page">
-    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, "\\u003c") }} />
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs).replace(/</g, "\\u003c") }} />
     <header className="products-header">
       <div className="products-shell products-header-inner">
         <Link href="/" aria-label={`${BRAND_NAME}, inicio`}><img className="products-logo" src={LOGO_PATH} alt={BRAND_NAME} /></Link>

@@ -15,8 +15,8 @@ import "./visual-polish.css";
 import "./commercial-improvements.css";
 
 const publicProduction = process.env.VERCEL_ENV === "production";
-const seoTitle = "Merly Import | Productos de higiene y limpieza al por mayor";
-const seoDescription = "Compra productos de higiene, limpieza y hogar al por mayor. Consulta presentaciones y cotiza por WhatsApp para tu negocio en Lima o provincias.";
+const seoTitle = "Higiene y limpieza al por mayor en Perú | Merly Import";
+const seoDescription = "Abastece tu bodega, botica o minimarket con productos de higiene, limpieza y hogar al por mayor. Cotiza por WhatsApp en Lima y provincias.";
 
 export const viewport: Viewport = { width: "device-width", initialScale: 1, colorScheme: "light", themeColor: "#005eb8" };
 export const metadata: Metadata = {
