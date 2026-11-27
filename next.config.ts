@@ -53,6 +53,8 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      { source: "/wp-sitemap.xml", destination: "/sitemap.xml", permanent: true },
+      { source: "/shop", destination: "/catalogo", permanent: true },
       { source: "/producto/:path*", destination: "/catalogo", permanent: true },
       { source: "/categoria-producto/:path*", destination: "/catalogo", permanent: true },
       { source: "/marca/:path*", destination: "/catalogo", permanent: true },

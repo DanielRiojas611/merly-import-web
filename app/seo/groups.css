@@ -1,0 +1,7 @@
+.seo-group-actions { margin-top: 24px; }
+.seo-group-information { padding-bottom: 48px; line-height: 1.65; }
+.seo-group-information h3 { margin: 16px 0 4px; }
+.seo-group-information p { margin: 0 0 14px; color: #536477; }
+.seo-group-links { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0 24px; }
+.seo-group-links a { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 14px; border: 1px solid #d8e3ec; border-radius: 10px; background: #fff; color: #004987; font-weight: 700; text-decoration: none; }
+.products-card-copy h3 { margin: 8px 0 10px; font-size: 18px; line-height: 1.25; }
