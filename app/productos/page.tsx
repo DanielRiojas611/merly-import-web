@@ -7,7 +7,9 @@ import { BRAND_NAME, LOGO_PATH } from "../lib/brand";
 import { getPublishedProducts } from "../lib/neon-catalog";
 import { productPath } from "../lib/product-seo";
 import { displayProductName, productQuoteName } from "../lib/product-utils";
+import { activeSeoGroups } from "../lib/seo-groups";
 import "./products.css";
+import "../seo/groups.css";
 
 export const revalidate = 120;
 
@@ -31,6 +33,7 @@ export default async function ProductsPage() {
     console.error("No se pudieron cargar las fichas de productos", error);
   }
 
+  const groups = activeSeoGroups(products);
   return <main className="products-page">
     <header className="products-header">
       <div className="products-shell products-header-inner">
@@ -43,6 +46,7 @@ export default async function ProductsPage() {
       <h1>Productos disponibles para cotizar</h1>
       <p>Encuentra productos de higiene, limpieza y hogar al por mayor para bodegas, boticas, minimarkets y distribuidores. Revisa cada presentación, agrega productos a tu cotización y consulta precio y disponibilidad por WhatsApp. Coordinamos entregas en Lima y envíos a provincias.</p>
     </section>
+    {groups.length > 0 && <section className="products-shell" aria-label="Categorías y marcas"><h2>Compra por categoría o marca</h2><nav className="seo-group-links">{groups.map(group => <Link key={group.path} href={group.path}>{group.label} al por mayor</Link>)}</nav></section>}
     <section className="products-shell" aria-label="Fichas de productos">
       {products.length ? <div className="products-grid">{products.map((product) => {
         const name = displayProductName(product.brand, product.name);

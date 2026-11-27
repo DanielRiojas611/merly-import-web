@@ -1,5 +1,5 @@
 import type { Product } from "../catalogo/products";
-import { productQuoteName } from "./product-utils";
+import { productQuoteName, displayProductName, normalizeBrand, isOwnBrand } from "./product-utils";
 
 export const SEO_PILOT_PRODUCT_IDS = [
   "pibe-panitos-100",
@@ -59,8 +59,14 @@ export function productIdFromSlug(slug: string) {
   return id;
 }
 
+export function productSeoName(product: Pick<Product, "brand" | "name">) {
+  const brand = normalizeBrand(product.brand);
+  const label = isOwnBrand(brand) ? brand.toLocaleUpperCase("es") : brand;
+  return [label, displayProductName(brand, product.name)].filter(Boolean).join(" ");
+}
+
 export function productSeoDescription(product: Pick<Product, "brand" | "name" | "presentation">) {
-  const name = productQuoteName(product);
+  const name = productSeoName(product);
   return `${name} para venta mayorista. Presentación: ${product.presentation}. Cotiza disponibilidad y envío a todo el Perú.`;
 }
 

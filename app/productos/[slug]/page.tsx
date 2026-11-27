@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
 import type { Product } from "../../catalogo/products";
-import { BRAND_NAME, LOGO_PATH } from "../../lib/brand";
+import { BRAND_NAME, LOGO_PATH, WHATSAPP_NUMBER } from "../../lib/brand";
 import { getPublishedProductsByIds } from "../../lib/neon-catalog";
 import {
   absoluteProductImage,
@@ -12,10 +12,12 @@ import {
   productPageSummary,
   productPath,
   productSeoDescription,
+  productSeoName,
   productSlug,
 } from "../../lib/product-seo";
 import { siteUrl } from "../../lib/site-url";
 import { displayProductName, productQuoteName } from "../../lib/product-utils";
+import { SEO_GROUPS, matchesSeoGroup } from "../../lib/seo-groups";
 import ProductQuoteButton from "./ProductQuoteButton";
 import "../products.css";
 
@@ -42,7 +44,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   const canonical = productPath(product);
   const description = productSeoDescription(product);
   const image = absoluteProductImage(product, siteUrl());
-  const title = `${productQuoteName(product)} mayorista`;
+  const title = `${productSeoName(product)} al por mayor`;
 
   return {
     title,
@@ -76,11 +78,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const name = displayProductName(product.brand, product.name);
   const fullName = productQuoteName(product);
   const description = productSeoDescription(product);
+  const relatedGroups = SEO_GROUPS.filter(group => matchesSeoGroup(product, group));
+  const whatsapp = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hola, quiero cotizar ${fullName}.`)}`;
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Product",
     "@id": `${canonical}#producto`,
-    name: fullName,
+    name: productSeoName(product),
     image: [image],
     description,
     sku: product.id,
@@ -126,6 +130,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </dl>
           <div className="product-actions">
             <ProductQuoteButton productId={product.id} productLabel={fullName} />
+            <a className="product-secondary-action" href={whatsapp} target="_blank" rel="noopener noreferrer">Cotizar por WhatsApp</a>
             <Link className="product-secondary-action" href="/catalogo">Seguir viendo el catálogo</Link>
           </div>
           <p className="product-commercial-note">El precio y la disponibilidad se confirman por WhatsApp antes de cerrar el pedido.</p>
@@ -135,6 +140,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <h2>Abastecimiento para negocios</h2>
         <p>Merly Import atiende a mayoristas, distribuidores, bodegas, minimarkets, boticas y farmacias. Coordinamos delivery en Lima o entrega mediante agencia para pedidos a provincias.</p>
       </section>
+      {relatedGroups.length > 0 && <nav className="product-actions" aria-label="Productos relacionados por categoría o marca">{relatedGroups.map(group => <Link className="product-secondary-action" key={group.path} href={group.path}>{group.label} al por mayor</Link>)}</nav>}
     </div>
   </main>;
 }

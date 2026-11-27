@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import type { Product } from "./catalogo/products";
 import { getPublishedProducts } from "./lib/neon-catalog";
 import { productPath } from "./lib/product-seo";
+import { activeSeoGroups } from "./lib/seo-groups";
 import { siteUrl } from "./lib/site-url";
 
 function lastUpdated() {
@@ -32,6 +33,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly" as const,
       priority: .7,
     })),
+    ...activeSeoGroups(products).map(group => ({ url: new URL(group.path, base).toString() })),
     { url: new URL("/distribuidor", base).toString() },
     { url: new URL("/privacidad", base).toString(), lastModified: modified, changeFrequency: "yearly", priority: .2 },
   ];
